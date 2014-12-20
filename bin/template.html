@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8"/>
+	<title>Client</title>
+	<meta name="description" content="" />
+</head>
+<body style="border:1px solid red;">	
+	<ul>
+		<li><a rel="pushstate" href="/">Home</a></li>
+		<li><a rel="pushstate" href="/muslim">Muslim</a></li>
+		<li><a rel="pushstate" href="/christian">Christian</a></li>
+		<li><a rel="pushstate" href="/jedi">Jedi</a></li>
+		<li><a rel="pushstate" href="/async">Async</a></li>
+		<li><a href="/giraffe">Giraffe <i>(non push state link)</i></a></li>
+		<li><a href="http://google.com">Google <i>(external link)</i></a></li>
+	</ul>	
+	
+	<div id="content"  style="margin:8px; border:1px solid blue;">::content::</div>	
+	<div id="load-type" class="label">This content was a page-reload</div>
+</body>
+	<script src="bean.js"></script>
+	<script src="Client.js"></script>
+</html>
