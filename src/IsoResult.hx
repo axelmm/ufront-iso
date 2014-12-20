@@ -55,8 +55,12 @@ class IsoResult  extends ufront.web.result.ActionResult
 	
 	#else
 	private function getContent(actionContext:ActionContext) {
-		var template = new Template(File.getContent(Sys.getCwd() + 'bin/template.html'));
-		return template.execute( { content: this.content} );		
+		
+		var testHeader = actionContext.httpContext.request.clientHeaders.get('UF-ISO-TYPE');
+		var testHeaderInfo = 'UF-ISO-TYPE: ' + testHeader;
+		
+		var template = new Template(File.getContent(Sys.getCwd() + 'template.html'));
+		return template.execute( { content: this.content + testHeaderInfo} );		
 	}	
 	#end
 }
