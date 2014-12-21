@@ -16,7 +16,7 @@ Client.main = function() {
 		if(!Iso.isFirstRequest()) Client.app.execute(new ufront.web.context.HttpContext(new ClientRequest(),new ClientResponse()));
 	});
 	Iso.initCache();
-	new UI(window.location.pathname).setMenuActive();
+	new IsoUI(window.location.pathname).setMenuActive();
 };
 Client.init = function() {
 	if(Client.app == null) {
@@ -233,7 +233,7 @@ ufront.web.context.HttpResponse.prototype = {
 	,__properties__: {set_redirectLocation:"set_redirectLocation",get_redirectLocation:"get_redirectLocation",set_contentType:"set_contentType",get_contentType:"get_contentType"}
 };
 var ClientResponse = function() {
-	new UI(window.location.pathname).setUI();
+	new IsoUI(window.location.pathname).setUI();
 	ufront.web.context.HttpResponse.call(this);
 };
 $hxClasses["ClientResponse"] = ClientResponse;
@@ -501,12 +501,12 @@ Iso.isFirstRequest = function() {
 Iso.initCache = function() {
 	var contentEl = window.document.getElementById("content");
 	if(contentEl == null) {
-		throw "Could not init Client cache on first request";
+		throw "Could not init contentCache on first request";
 		return;
 	}
 	var content = contentEl.innerHTML;
 	var url = window.location.pathname;
-	Iso.cache.set(url,content);
+	Iso.contentCache.set(url,content);
 };
 ufront.web.Controller = function() {
 };
@@ -602,16 +602,16 @@ IsoController.prototype = $extend(ufront.web.Controller.prototype,{
 	}
 	,getContent: function(uri) {
 		var f = new tink.core.FutureTrigger();
-		if(!Iso.cache.exists(uri)) {
+		if(!Iso.contentCache.exists(uri)) {
 			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success"),"PushState - ajax");
 			this.ufTrace("Load from " + uri,{ fileName : "IsoController.hx", lineNumber : 25, className : "IsoController", methodName : "getContent"});
 			var request = new XMLHttpRequest();
 			request.open("GET",uri);
-			request.setRequestHeader(Iso.requestType,Iso.REQ_TYPE_CLIENT);
+			request.setRequestHeader(Iso.requestTypeTag,Iso.REQ_TYPE_CLIENT);
 			request.onload = function(e) {
 				var requestResponse = request.response;
 				var content = requestResponse;
-				Iso.cache.set(uri,requestResponse);
+				Iso.contentCache.set(uri,requestResponse);
 				f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
 			};
 			request.onerror = function(e1) {
@@ -620,7 +620,7 @@ IsoController.prototype = $extend(ufront.web.Controller.prototype,{
 			request.send(null);
 		} else {
 			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-warning"),"PushState - cache");
-			var cachedContent = Iso.cache.get(uri);
+			var cachedContent = Iso.contentCache.get(uri);
 			var content1 = cachedContent;
 			f.trigger(tink.core.Outcome.Success(new IsoResult(content1)));
 		}
@@ -693,6 +693,33 @@ IsoResult.prototype = $extend(ufront.web.result.ActionResult.prototype,{
 	}
 	,__class__: IsoResult
 });
+var IsoUI = function(uri) {
+	this.uri = uri;
+};
+$hxClasses["IsoUI"] = IsoUI;
+IsoUI.__name__ = ["IsoUI"];
+IsoUI.prototype = {
+	setUI: function() {
+		this.setMenuActive();
+		this.setClientLoadType();
+	}
+	,setClientLoadType: function() {
+		dtx.collection.ElementManipulation.setText(dtx.Tools.find("#load-type"),"PushState");
+		dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success");
+	}
+	,setMenuActive: function() {
+		var menu = dtx.Tools.find("#menu");
+		var $it0 = dtx.single.Traversing.children(menu.getNode(0)).iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			dtx.single.ElementManipulation.removeClass(item,"active");
+			var href = dtx.single.ElementManipulation.attr(item.firstChild,"href");
+			if(href == this.uri) dtx.single.ElementManipulation.addClass(item,"active");
+		}
+		return this;
+	}
+	,__class__: IsoUI
+};
 var Lambda = function() { };
 $hxClasses["Lambda"] = Lambda;
 Lambda.__name__ = ["Lambda"];
@@ -1159,33 +1186,6 @@ Type["typeof"] = function(v) {
 };
 Type.allEnums = function(e) {
 	return e.__empty_constructs__;
-};
-var UI = function(uri) {
-	this.uri = uri;
-};
-$hxClasses["UI"] = UI;
-UI.__name__ = ["UI"];
-UI.prototype = {
-	setUI: function() {
-		this.setMenuActive();
-		this.setClientLoadType();
-	}
-	,setClientLoadType: function() {
-		dtx.collection.ElementManipulation.setText(dtx.Tools.find("#load-type"),"PushState");
-		dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success");
-	}
-	,setMenuActive: function() {
-		var menu = dtx.Tools.find("#menu");
-		var $it0 = dtx.single.Traversing.children(menu.getNode(0)).iterator();
-		while( $it0.hasNext() ) {
-			var item = $it0.next();
-			dtx.single.ElementManipulation.removeClass(item,"active");
-			var href = dtx.single.ElementManipulation.attr(item.firstChild,"href");
-			if(href == this.uri) dtx.single.ElementManipulation.addClass(item,"active");
-		}
-		return this;
-	}
-	,__class__: UI
 };
 var XmlType = $hxClasses["XmlType"] = { __ename__ : ["XmlType"], __constructs__ : [] };
 XmlType.__empty_constructs__ = [];
@@ -9952,11 +9952,11 @@ ufront.web.context.HttpResponse.NOT_FOUND = 404;
 ufront.web.context.HttpResponse.INTERNAL_SERVER_ERROR = 500;
 CompileTimeClassList.__meta__ = { obj : { classLists : [["null,true,ufront.web.Controller","IsoController,TestController,ufront.web.DefaultUfrontController"],["null,true,ufront.api.UFApi",""]]}};
 IMap.__meta__ = { obj : { 'interface' : null}};
-Iso.requestType = "UF-ISO-TYPE";
+Iso.requestTypeTag = "UF-ISO-TYPE";
 Iso.REQ_TYPE_CLIENT = "CLIENT";
 Iso.REQ_TYPE_SERVER = "SERVER";
 Iso.stateChangeCount = 0;
-Iso.cache = new haxe.ds.StringMap();
+Iso.contentCache = new haxe.ds.StringMap();
 ufront.web.Controller.__meta__ = { fields : { context : { type : ["ufront.web.context.HttpContext"], inject : null}}};
 IsoController.__meta__ = { fields : { iso : { wrapResult : [4]}, isotest : { wrapResult : [4]}}};
 TestController.__meta__ = { fields : { index : { wrapResult : [3]}, home : { wrapResult : [3]}, jedi : { wrapResult : [3]}, giraffe : { wrapResult : [3]}, execute_isoController : { wrapResult : [0]}}};

@@ -7,7 +7,7 @@ using Detox;
  * UI
  * @author 
  */
-class UI 
+class IsoUI 
 {
 	var uri:String;
 	public function new(uri:String) {

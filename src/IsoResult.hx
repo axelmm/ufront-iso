@@ -36,7 +36,7 @@ class IsoResult  extends ufront.web.result.ActionResult
 		new Template(File.getContent(Sys.getCwd() + 'app/template.html'));
 	}
 	private function getContent(actionContext:ActionContext) {
-		var requestType = actionContext.httpContext.request.clientHeaders.get(Iso.requestType);
+		var requestType = actionContext.httpContext.request.clientHeaders.get(Iso.requestTypeTag);
 		actionContext.httpContext.ufTrace('Request type from header: $requestType');
 		var html =  switch requestType {
 			case Iso.REQ_TYPE_CLIENT: this.content;

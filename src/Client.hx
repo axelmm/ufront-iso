@@ -20,7 +20,7 @@ class Client
 			}
 		});
 		Iso.initCache();
-		new UI(Browser.window.location.pathname).setMenuActive();
+		new IsoUI(Browser.window.location.pathname).setMenuActive();
 	}
 
 	static function init() {		
@@ -47,7 +47,7 @@ class ClientRequest extends  ufront.web.context.HttpRequest {
 
 class ClientResponse extends  ufront.web.context.HttpResponse {
 	public function new() {
-		new UI(Browser.window.location.pathname).setUI();	
+		new IsoUI(Browser.window.location.pathname).setUI();	
 		super();
 	}
 	override function flush() {				
