@@ -13,12 +13,10 @@ Client.main = function() {
 	Client.init();
 	pushstate.PushState.init();
 	pushstate.PushState.addEventListener(null,function(url) {
-		if(++Client.stateChangeCount > 1) {
-			window.document.getElementById("load-type").innerHTML = "This content was a push-state";
-			haxe.Log.trace("client-side",{ fileName : "Client.hx", lineNumber : 19, className : "Client", methodName : "main"});
-			Client.app.execute(new ufront.web.context.HttpContext(new ClientRequest(),new ClientResponse()));
-		}
+		if(!Iso.isFirstRequest()) Client.app.execute(new ufront.web.context.HttpContext(new ClientRequest(),new ClientResponse()));
 	});
+	Iso.initCache();
+	new UI(window.location.pathname).setMenuActive();
 };
 Client.init = function() {
 	if(Client.app == null) {
@@ -128,6 +126,7 @@ ClientRequest.prototype = $extend(ufront.web.context.HttpRequest.prototype,{
 	,__class__: ClientRequest
 });
 ufront.web.context.HttpResponse = function() {
+	this.iso = false;
 	this.clear();
 	this._flushed = false;
 };
@@ -141,7 +140,7 @@ ufront.web.context.HttpResponse.prototype = {
 		this._flushed = true;
 	}
 	,flush: function() {
-		throw new thx.core.error.NotImplemented({ fileName : "HttpResponse.hx", lineNumber : 108, className : "ufront.web.context.HttpResponse", methodName : "flush"});
+		throw new thx.core.error.NotImplemented({ fileName : "HttpResponse.hx", lineNumber : 110, className : "ufront.web.context.HttpResponse", methodName : "flush"});
 	}
 	,clear: function() {
 		this.clearCookies();
@@ -234,6 +233,7 @@ ufront.web.context.HttpResponse.prototype = {
 	,__properties__: {set_redirectLocation:"set_redirectLocation",get_redirectLocation:"get_redirectLocation",set_contentType:"set_contentType",get_contentType:"get_contentType"}
 };
 var ClientResponse = function() {
+	new UI(window.location.pathname).setUI();
 	ufront.web.context.HttpResponse.call(this);
 };
 $hxClasses["ClientResponse"] = ClientResponse;
@@ -434,6 +434,230 @@ HxOverrides.iter = function(a) {
 		return this.arr[this.cur++];
 	}};
 };
+var IMap = function() { };
+$hxClasses["IMap"] = IMap;
+IMap.__name__ = ["IMap"];
+var haxe = {};
+haxe.ds = {};
+haxe.ds.StringMap = function() {
+	this.h = { };
+};
+$hxClasses["haxe.ds.StringMap"] = haxe.ds.StringMap;
+haxe.ds.StringMap.__name__ = ["haxe","ds","StringMap"];
+haxe.ds.StringMap.__interfaces__ = [IMap];
+haxe.ds.StringMap.prototype = {
+	set: function(key,value) {
+		this.h["$" + key] = value;
+	}
+	,get: function(key) {
+		return this.h["$" + key];
+	}
+	,exists: function(key) {
+		return this.h.hasOwnProperty("$" + key);
+	}
+	,remove: function(key) {
+		key = "$" + key;
+		if(!this.h.hasOwnProperty(key)) return false;
+		delete(this.h[key]);
+		return true;
+	}
+	,keys: function() {
+		var a = [];
+		for( var key in this.h ) {
+		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
+		}
+		return HxOverrides.iter(a);
+	}
+	,iterator: function() {
+		return { ref : this.h, it : this.keys(), hasNext : function() {
+			return this.it.hasNext();
+		}, next : function() {
+			var i = this.it.next();
+			return this.ref["$" + i];
+		}};
+	}
+	,toString: function() {
+		var s = new StringBuf();
+		s.b += "{";
+		var it = this.keys();
+		while( it.hasNext() ) {
+			var i = it.next();
+			if(i == null) s.b += "null"; else s.b += "" + i;
+			s.b += " => ";
+			s.add(Std.string(this.get(i)));
+			if(it.hasNext()) s.b += ", ";
+		}
+		s.b += "}";
+		return s.b;
+	}
+	,__class__: haxe.ds.StringMap
+};
+var Iso = function() { };
+$hxClasses["Iso"] = Iso;
+Iso.__name__ = ["Iso"];
+Iso.isFirstRequest = function() {
+	return ++Iso.stateChangeCount <= 1;
+};
+Iso.initCache = function() {
+	var contentEl = window.document.getElementById("content");
+	if(contentEl == null) {
+		throw "Could not init Client cache on first request";
+		return;
+	}
+	var content = contentEl.innerHTML;
+	var url = window.location.pathname;
+	Iso.cache.set(url,content);
+};
+ufront.web.Controller = function() {
+};
+$hxClasses["ufront.web.Controller"] = ufront.web.Controller;
+ufront.web.Controller.__name__ = ["ufront","web","Controller"];
+ufront.web.Controller.prototype = {
+	execute: function() {
+		return tink.core._Future.Future_Impl_.sync(tink.core.Outcome.Failure(ufront.web.HttpError.internalServerError("Field execute() in ufront.web.Controller is an abstract method, please override it in " + this.toString() + " ",null,{ fileName : "Controller.hx", lineNumber : 134, className : "ufront.web.Controller", methodName : "execute"})));
+	}
+	,executeSubController: function(controller) {
+		return this.context.injector.instantiate(controller).execute();
+	}
+	,toString: function() {
+		return Type.getClassName(Type.getClass(this));
+	}
+	,ufTrace: function(msg,pos) {
+		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Trace}); else haxe.Log.trace("" + Std.string(msg),pos);
+	}
+	,ufLog: function(msg,pos) {
+		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Log}); else haxe.Log.trace("Log: " + Std.string(msg),pos);
+	}
+	,ufWarn: function(msg,pos) {
+		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Warning}); else haxe.Log.trace("Warning: " + Std.string(msg),pos);
+	}
+	,ufError: function(msg,pos) {
+		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Error}); else haxe.Log.trace("Error: " + Std.string(msg),pos);
+	}
+	,setBaseUri: function(uriPartsBeforeRouting) {
+		var remainingUri = haxe.io.Path.addTrailingSlash(uriPartsBeforeRouting.join("/"));
+		var fullUri = haxe.io.Path.addTrailingSlash(this.context.getRequestUri());
+		this.baseUri = haxe.io.Path.addTrailingSlash(HxOverrides.substr(fullUri,0,fullUri.length - remainingUri.length));
+	}
+	,wrapResult: function(result,wrappingRequired) {
+		if(result == null) {
+			var actionResult = new ufront.web.result.EmptyResult(true);
+			return tink.core._Future.Future_Impl_.sync(tink.core.Outcome.Success(actionResult));
+		} else {
+			var future;
+			if((wrappingRequired & 1 << ufront.web.WrapRequired.WRFuture[1]) != 0) future = this.wrapInFuture(result); else future = result;
+			var surprise;
+			if((wrappingRequired & 1 << ufront.web.WrapRequired.WROutcome[1]) != 0) surprise = this.wrapInOutcome(future); else surprise = future;
+			var finalResult;
+			if((wrappingRequired & 1 << ufront.web.WrapRequired.WRResultOrError[1]) != 0) finalResult = this.wrapResultOrError(surprise); else finalResult = surprise;
+			return finalResult;
+		}
+	}
+	,wrapInFuture: function(result) {
+		return tink.core._Future.Future_Impl_.sync(result);
+	}
+	,wrapInOutcome: function(future) {
+		return tink.core._Future.Future_Impl_.map(future,function(result) {
+			return tink.core.Outcome.Success(result);
+		});
+	}
+	,wrapResultOrError: function(surprise) {
+		return tink.core._Future.Future_Impl_.map(surprise,function(outcome) {
+			switch(outcome[1]) {
+			case 0:
+				var result = outcome[2];
+				return tink.core.Outcome.Success(ufront.web.result.ActionResult.wrap(result));
+			case 1:
+				var error = outcome[2];
+				return tink.core.Outcome.Failure(ufront.web.HttpError.wrap(error,null,{ fileName : "Controller.hx", lineNumber : 228, className : "ufront.web.Controller", methodName : "wrapResultOrError"}));
+			}
+		});
+	}
+	,setContextActionResultWhenFinished: function(result) {
+		var _g = this;
+		result(function(outcome) {
+			switch(outcome[1]) {
+			case 0:
+				var ar = outcome[2];
+				_g.context.actionContext.actionResult = ar;
+				break;
+			default:
+			}
+		});
+	}
+	,__class__: ufront.web.Controller
+};
+var IsoController = function() {
+	ufront.web.Controller.call(this);
+};
+$hxClasses["IsoController"] = IsoController;
+IsoController.__name__ = ["IsoController"];
+IsoController.__super__ = ufront.web.Controller;
+IsoController.prototype = $extend(ufront.web.Controller.prototype,{
+	iso: function() {
+		return this.getContent(this.context.request.get_uri());
+	}
+	,isotest: function() {
+		return this.getContent(this.context.request.get_uri());
+	}
+	,getContent: function(uri) {
+		var f = new tink.core.FutureTrigger();
+		if(!Iso.cache.exists(uri)) {
+			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success"),"PushState - ajax");
+			this.ufTrace("Load from " + uri,{ fileName : "IsoController.hx", lineNumber : 25, className : "IsoController", methodName : "getContent"});
+			var request = new XMLHttpRequest();
+			request.open("GET",uri);
+			request.setRequestHeader(Iso.requestType,Iso.REQ_TYPE_CLIENT);
+			request.onload = function(e) {
+				var requestResponse = request.response;
+				var content = requestResponse;
+				Iso.cache.set(uri,requestResponse);
+				f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
+			};
+			request.onerror = function(e1) {
+				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "IsoController.hx", lineNumber : 36, className : "IsoController", methodName : "getContent"})));
+			};
+			request.send(null);
+		} else {
+			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-warning"),"PushState - cache");
+			var cachedContent = Iso.cache.get(uri);
+			var content1 = cachedContent;
+			f.trigger(tink.core.Outcome.Success(new IsoResult(content1)));
+		}
+		return f.future;
+	}
+	,execute: function() {
+		var uriParts = this.context.actionContext.get_uriParts();
+		this.setBaseUri(uriParts);
+		var params = this.context.request.get_params();
+		var method = this.context.request.get_httpMethod();
+		this.context.actionContext.controller = this;
+		this.context.actionContext.action = "execute";
+		try {
+			if(0 == uriParts.length) {
+				this.context.actionContext.action = "iso";
+				this.context.actionContext.args = [];
+				this.context.actionContext.get_uriParts().splice(0,0);
+				var wrappingRequired = haxe.rtti.Meta.getFields(IsoController).iso.wrapResult[0];
+				var result = this.wrapResult(this.iso(),wrappingRequired);
+				this.setContextActionResultWhenFinished(result);
+				return result;
+			} else if(1 == uriParts.length && uriParts[0] == "test") {
+				this.context.actionContext.action = "isotest";
+				this.context.actionContext.args = [];
+				this.context.actionContext.get_uriParts().splice(0,1);
+				var wrappingRequired1 = haxe.rtti.Meta.getFields(IsoController).isotest.wrapResult[0];
+				var result1 = this.wrapResult(this.isotest(),wrappingRequired1);
+				this.setContextActionResultWhenFinished(result1);
+				return result1;
+			}
+			throw ufront.web.HttpError.pageNotFound({ fileName : "ControllerMacros.hx", lineNumber : 433, className : "IsoController", methodName : "execute"});
+		} catch( e ) {
+			return ufront.core.Sync.httpError("Uncaught error while executing " + Std.string(this.context.actionContext.controller) + "." + this.context.actionContext.action + "()",e,{ fileName : "ControllerMacros.hx", lineNumber : 436, className : "IsoController", methodName : "execute"});
+		}
+	}
+	,__class__: IsoController
+});
 ufront.web.result = {};
 ufront.web.result.ActionResult = function() { };
 $hxClasses["ufront.web.result.ActionResult"] = ufront.web.result.ActionResult;
@@ -459,7 +683,8 @@ IsoResult.__name__ = ["IsoResult"];
 IsoResult.__super__ = ufront.web.result.ActionResult;
 IsoResult.prototype = $extend(ufront.web.result.ActionResult.prototype,{
 	executeResult: function(actionContext) {
-		actionContext.httpContext.response.write(this.getContent(actionContext));
+		var html = this.getContent(actionContext);
+		actionContext.httpContext.response.write(html);
 		return ufront.core.Sync.success();
 	}
 	,getContent: function(actionContext) {
@@ -551,9 +776,6 @@ List.prototype = {
 	}
 	,__class__: List
 };
-var IMap = function() { };
-$hxClasses["IMap"] = IMap;
-IMap.__name__ = ["IMap"];
 Math.__name__ = ["Math"];
 var Random = function() { };
 $hxClasses["Random"] = Random;
@@ -728,141 +950,6 @@ StringTools.replace = function(s,sub,by) {
 StringTools.fastCodeAt = function(s,index) {
 	return s.charCodeAt(index);
 };
-ufront.web.Controller = function() {
-};
-$hxClasses["ufront.web.Controller"] = ufront.web.Controller;
-ufront.web.Controller.__name__ = ["ufront","web","Controller"];
-ufront.web.Controller.prototype = {
-	execute: function() {
-		return tink.core._Future.Future_Impl_.sync(tink.core.Outcome.Failure(ufront.web.HttpError.internalServerError("Field execute() in ufront.web.Controller is an abstract method, please override it in " + this.toString() + " ",null,{ fileName : "Controller.hx", lineNumber : 134, className : "ufront.web.Controller", methodName : "execute"})));
-	}
-	,executeSubController: function(controller) {
-		return this.context.injector.instantiate(controller).execute();
-	}
-	,toString: function() {
-		return Type.getClassName(Type.getClass(this));
-	}
-	,ufTrace: function(msg,pos) {
-		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Trace}); else haxe.Log.trace("" + Std.string(msg),pos);
-	}
-	,ufLog: function(msg,pos) {
-		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Log}); else haxe.Log.trace("Log: " + Std.string(msg),pos);
-	}
-	,ufWarn: function(msg,pos) {
-		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Warning}); else haxe.Log.trace("Warning: " + Std.string(msg),pos);
-	}
-	,ufError: function(msg,pos) {
-		if(this.context != null) this.context.messages.push({ msg : msg, pos : pos, type : ufront.log.MessageType.Error}); else haxe.Log.trace("Error: " + Std.string(msg),pos);
-	}
-	,setBaseUri: function(uriPartsBeforeRouting) {
-		var remainingUri = haxe.io.Path.addTrailingSlash(uriPartsBeforeRouting.join("/"));
-		var fullUri = haxe.io.Path.addTrailingSlash(this.context.getRequestUri());
-		this.baseUri = haxe.io.Path.addTrailingSlash(HxOverrides.substr(fullUri,0,fullUri.length - remainingUri.length));
-	}
-	,wrapResult: function(result,wrappingRequired) {
-		if(result == null) {
-			var actionResult = new ufront.web.result.EmptyResult(true);
-			return tink.core._Future.Future_Impl_.sync(tink.core.Outcome.Success(actionResult));
-		} else {
-			var future;
-			if((wrappingRequired & 1 << ufront.web.WrapRequired.WRFuture[1]) != 0) future = this.wrapInFuture(result); else future = result;
-			var surprise;
-			if((wrappingRequired & 1 << ufront.web.WrapRequired.WROutcome[1]) != 0) surprise = this.wrapInOutcome(future); else surprise = future;
-			var finalResult;
-			if((wrappingRequired & 1 << ufront.web.WrapRequired.WRResultOrError[1]) != 0) finalResult = this.wrapResultOrError(surprise); else finalResult = surprise;
-			return finalResult;
-		}
-	}
-	,wrapInFuture: function(result) {
-		return tink.core._Future.Future_Impl_.sync(result);
-	}
-	,wrapInOutcome: function(future) {
-		return tink.core._Future.Future_Impl_.map(future,function(result) {
-			return tink.core.Outcome.Success(result);
-		});
-	}
-	,wrapResultOrError: function(surprise) {
-		return tink.core._Future.Future_Impl_.map(surprise,function(outcome) {
-			switch(outcome[1]) {
-			case 0:
-				var result = outcome[2];
-				return tink.core.Outcome.Success(ufront.web.result.ActionResult.wrap(result));
-			case 1:
-				var error = outcome[2];
-				return tink.core.Outcome.Failure(ufront.web.HttpError.wrap(error,null,{ fileName : "Controller.hx", lineNumber : 228, className : "ufront.web.Controller", methodName : "wrapResultOrError"}));
-			}
-		});
-	}
-	,setContextActionResultWhenFinished: function(result) {
-		var _g = this;
-		result(function(outcome) {
-			switch(outcome[1]) {
-			case 0:
-				var ar = outcome[2];
-				_g.context.actionContext.actionResult = ar;
-				break;
-			default:
-			}
-		});
-	}
-	,__class__: ufront.web.Controller
-};
-var SubController = function() {
-	ufront.web.Controller.call(this);
-};
-$hxClasses["SubController"] = SubController;
-SubController.__name__ = ["SubController"];
-SubController.__super__ = ufront.web.Controller;
-SubController.prototype = $extend(ufront.web.Controller.prototype,{
-	subA: function() {
-		return new ufront.web.result.ContentResult("This is /sub/a");
-	}
-	,subB: function() {
-		return new ufront.web.result.ContentResult("This is /sub/b");
-	}
-	,subElse: function() {
-		return new ufront.web.result.ContentResult("This is /sub/*");
-	}
-	,execute: function() {
-		var uriParts = this.context.actionContext.get_uriParts();
-		this.setBaseUri(uriParts);
-		var params = this.context.request.get_params();
-		var method = this.context.request.get_httpMethod();
-		this.context.actionContext.controller = this;
-		this.context.actionContext.action = "execute";
-		try {
-			if(1 == uriParts.length && uriParts[0] == "a") {
-				this.context.actionContext.action = "subA";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired = haxe.rtti.Meta.getFields(SubController).subA.wrapResult[0];
-				var result = this.wrapResult(this.subA(),wrappingRequired);
-				this.setContextActionResultWhenFinished(result);
-				return result;
-			} else if(1 == uriParts.length && uriParts[0] == "b") {
-				this.context.actionContext.action = "subB";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired1 = haxe.rtti.Meta.getFields(SubController).subB.wrapResult[0];
-				var result1 = this.wrapResult(this.subB(),wrappingRequired1);
-				this.setContextActionResultWhenFinished(result1);
-				return result1;
-			} else {
-				this.context.actionContext.action = "subElse";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,0);
-				var wrappingRequired2 = haxe.rtti.Meta.getFields(SubController).subElse.wrapResult[0];
-				var result2 = this.wrapResult(this.subElse(),wrappingRequired2);
-				this.setContextActionResultWhenFinished(result2);
-				return result2;
-			}
-			throw ufront.web.HttpError.pageNotFound({ fileName : "ControllerMacros.hx", lineNumber : 433, className : "SubController", methodName : "execute"});
-		} catch( e ) {
-			return ufront.core.Sync.httpError("Uncaught error while executing " + Std.string(this.context.actionContext.controller) + "." + this.context.actionContext.action + "()",e,{ fileName : "ControllerMacros.hx", lineNumber : 436, className : "SubController", methodName : "execute"});
-		}
-	}
-	,__class__: SubController
-});
 var TestController = function() {
 	ufront.web.Controller.call(this);
 };
@@ -871,16 +958,10 @@ TestController.__name__ = ["TestController"];
 TestController.__super__ = ufront.web.Controller;
 TestController.prototype = $extend(ufront.web.Controller.prototype,{
 	index: function() {
-		return new IsoResult("<ul><li>Home</li><li><a href='/staff/John'>Staff: John</a></li><li><a href='/staff/Jane'>Staff: Jane</a></li><li><a href='/contact'>Contact</a></li><li><a href='/pages/a/b/c/d'>Pages/*</a></li><li><a href='/sub/a'>subcontroller /a</a></li><li><a href='/sub/x/y/z'>subcontroller /*</a></li><li><a href='/redirect'>/redirect -> /home</a></li></ul>");
+		return new IsoResult("<h1>Home</h1>");
 	}
 	,home: function() {
 		return this.index();
-	}
-	,muslim: function() {
-		return new IsoResult("<h1>Muslim</h1>");
-	}
-	,christian: function() {
-		return new IsoResult("<h1>Christian</h1>");
 	}
 	,jedi: function() {
 		return new IsoResult("<h1>Jedi</h1>");
@@ -888,37 +969,8 @@ TestController.prototype = $extend(ufront.web.Controller.prototype,{
 	,giraffe: function() {
 		return new IsoResult("<h2>giraffe</h2>");
 	}
-	,staff: function() {
-		return "Staff";
-	}
-	,viewStaff: function(name) {
-		return "Staff: " + name;
-	}
-	,contact: function() {
-		return "Contact <form method='POST' action='/contact/'><p>Name:<br/><input name='name' /></p><p>Age:<br/><input name='age' /></p><input type='submit'/></form>";
-	}
-	,contactPost: function(args) {
-		return "Contact Post " + Std.string(args);
-	}
-	,testcontent: function(rest) {
-		return new ufront.web.result.ContentResult(Std.string(rest.join(", ")));
-	}
-	,pageCatchAll: function(rest) {
-		return new ufront.web.result.ContentResult(Std.string(rest),"text/html");
-	}
-	,redirect: function() {
-		return new ufront.web.result.RedirectResult("/home");
-	}
-	,async: function() {
-		return this.simulatedAsyncProcess();
-	}
-	,simulatedAsyncProcess: function() {
-		var f = new tink.core.FutureTrigger();
-		if(Math.random() < 0.5) f.trigger(tink.core.Outcome.Success(new ufront.web.result.ContentResult("This is the result from a simulated async success! :-)"))); else f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"This is a simulated async error - happens every second time...",{ fileName : "TestController.hx", lineNumber : 39, className : "TestController", methodName : "simulatedAsyncProcess"})));
-		return f.future;
-	}
-	,execute_subController: function() {
-		return this.context.injector.instantiate(SubController).execute();
+	,execute_isoController: function() {
+		return this.context.injector.instantiate(IsoController).execute();
 	}
 	,execute: function() {
 		var uriParts = this.context.actionContext.get_uriParts();
@@ -944,116 +996,30 @@ TestController.prototype = $extend(ufront.web.Controller.prototype,{
 				var result1 = this.wrapResult(this.home(),wrappingRequired1);
 				this.setContextActionResultWhenFinished(result1);
 				return result1;
-			} else if(1 == uriParts.length && uriParts[0] == "muslim") {
-				this.context.actionContext.action = "muslim";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired2 = haxe.rtti.Meta.getFields(TestController).muslim.wrapResult[0];
-				var result2 = this.wrapResult(this.muslim(),wrappingRequired2);
-				this.setContextActionResultWhenFinished(result2);
-				return result2;
-			} else if(1 == uriParts.length && uriParts[0] == "christian") {
-				this.context.actionContext.action = "christian";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired3 = haxe.rtti.Meta.getFields(TestController).christian.wrapResult[0];
-				var result3 = this.wrapResult(this.christian(),wrappingRequired3);
-				this.setContextActionResultWhenFinished(result3);
-				return result3;
 			} else if(1 == uriParts.length && uriParts[0] == "jedi") {
 				this.context.actionContext.action = "jedi";
 				this.context.actionContext.args = [];
 				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired4 = haxe.rtti.Meta.getFields(TestController).jedi.wrapResult[0];
-				var result4 = this.wrapResult(this.jedi(),wrappingRequired4);
-				this.setContextActionResultWhenFinished(result4);
-				return result4;
+				var wrappingRequired2 = haxe.rtti.Meta.getFields(TestController).jedi.wrapResult[0];
+				var result2 = this.wrapResult(this.jedi(),wrappingRequired2);
+				this.setContextActionResultWhenFinished(result2);
+				return result2;
 			} else if(1 == uriParts.length && uriParts[0] == "giraffe") {
 				this.context.actionContext.action = "giraffe";
 				this.context.actionContext.args = [];
 				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired5 = haxe.rtti.Meta.getFields(TestController).giraffe.wrapResult[0];
-				var result5 = this.wrapResult(this.giraffe(),wrappingRequired5);
-				this.setContextActionResultWhenFinished(result5);
-				return result5;
-			} else if(1 == uriParts.length && uriParts[0] == "staff.html") {
-				this.context.actionContext.action = "staff";
+				var wrappingRequired3 = haxe.rtti.Meta.getFields(TestController).giraffe.wrapResult[0];
+				var result3 = this.wrapResult(this.giraffe(),wrappingRequired3);
+				this.setContextActionResultWhenFinished(result3);
+				return result3;
+			} else if(1 <= uriParts.length && uriParts[0] == "iso") {
+				this.context.actionContext.action = "execute_isoController";
 				this.context.actionContext.args = [];
 				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired6 = haxe.rtti.Meta.getFields(TestController).staff.wrapResult[0];
-				var result6 = this.wrapResult(this.staff(),wrappingRequired6);
-				this.setContextActionResultWhenFinished(result6);
-				return result6;
-			} else if(2 == uriParts.length && uriParts[0] == "staff" && uriParts[1].length > 0) {
-				var name = uriParts[1];
-				this.context.actionContext.action = "viewStaff";
-				this.context.actionContext.args = [name];
-				this.context.actionContext.get_uriParts().splice(0,2);
-				var wrappingRequired7 = haxe.rtti.Meta.getFields(TestController).viewStaff.wrapResult[0];
-				var result7 = this.wrapResult(this.viewStaff(name),wrappingRequired7);
-				this.setContextActionResultWhenFinished(result7);
-				return result7;
-			} else if(method.toLowerCase() == "get" && 1 == uriParts.length && uriParts[0] == "contact") {
-				this.context.actionContext.action = "contact";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired8 = haxe.rtti.Meta.getFields(TestController).contact.wrapResult[0];
-				var result8 = this.wrapResult(this.contact(),wrappingRequired8);
-				this.setContextActionResultWhenFinished(result8);
-				return result8;
-			} else if(method.toLowerCase() == "post" && 1 == uriParts.length && uriParts[0] == "contact") {
-				var _param_tmp_name = ufront.core._MultiValueMap.MultiValueMap_Impl_.get(params,"name");
-				var _param_tmp_age = Std.parseInt(ufront.core._MultiValueMap.MultiValueMap_Impl_.get(params,"age"));
-				var args = { name : _param_tmp_name, age : _param_tmp_age};
-				this.context.actionContext.action = "contactPost";
-				this.context.actionContext.args = [args];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired9 = haxe.rtti.Meta.getFields(TestController).contactPost.wrapResult[0];
-				var result9 = this.wrapResult(this.contactPost(args),wrappingRequired9);
-				this.setContextActionResultWhenFinished(result9);
-				return result9;
-			} else if(1 <= uriParts.length && uriParts[0] == "content") {
-				var rest = this.context.actionContext.get_uriParts();
-				this.context.actionContext.action = "testcontent";
-				this.context.actionContext.args = [rest];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired10 = haxe.rtti.Meta.getFields(TestController).testcontent.wrapResult[0];
-				var result10 = this.wrapResult(this.testcontent(rest),wrappingRequired10);
-				this.setContextActionResultWhenFinished(result10);
-				return result10;
-			} else if(1 <= uriParts.length && uriParts[0] == "pages") {
-				var rest1 = this.context.actionContext.get_uriParts();
-				this.context.actionContext.action = "pageCatchAll";
-				this.context.actionContext.args = [rest1];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired11 = haxe.rtti.Meta.getFields(TestController).pageCatchAll.wrapResult[0];
-				var result11 = this.wrapResult(this.pageCatchAll(rest1),wrappingRequired11);
-				this.setContextActionResultWhenFinished(result11);
-				return result11;
-			} else if(1 <= uriParts.length && uriParts[0] == "sub") {
-				this.context.actionContext.action = "execute_subController";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired12 = haxe.rtti.Meta.getFields(TestController).execute_subController.wrapResult[0];
-				var result12 = this.wrapResult(this.execute_subController(),wrappingRequired12);
-				this.setContextActionResultWhenFinished(result12);
-				return result12;
-			} else if(1 == uriParts.length && uriParts[0] == "redirect") {
-				this.context.actionContext.action = "redirect";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired13 = haxe.rtti.Meta.getFields(TestController).redirect.wrapResult[0];
-				var result13 = this.wrapResult(this.redirect(),wrappingRequired13);
-				this.setContextActionResultWhenFinished(result13);
-				return result13;
-			} else if(1 == uriParts.length && uriParts[0] == "async") {
-				this.context.actionContext.action = "async";
-				this.context.actionContext.args = [];
-				this.context.actionContext.get_uriParts().splice(0,1);
-				var wrappingRequired14 = haxe.rtti.Meta.getFields(TestController).async.wrapResult[0];
-				var result14 = this.wrapResult(this.async(),wrappingRequired14);
-				this.setContextActionResultWhenFinished(result14);
-				return result14;
+				var wrappingRequired4 = haxe.rtti.Meta.getFields(TestController).execute_isoController.wrapResult[0];
+				var result4 = this.wrapResult(this.execute_isoController(),wrappingRequired4);
+				this.setContextActionResultWhenFinished(result4);
+				return result4;
 			}
 			throw ufront.web.HttpError.pageNotFound({ fileName : "ControllerMacros.hx", lineNumber : 433, className : "TestController", methodName : "execute"});
 		} catch( e ) {
@@ -1193,6 +1159,33 @@ Type["typeof"] = function(v) {
 };
 Type.allEnums = function(e) {
 	return e.__empty_constructs__;
+};
+var UI = function(uri) {
+	this.uri = uri;
+};
+$hxClasses["UI"] = UI;
+UI.__name__ = ["UI"];
+UI.prototype = {
+	setUI: function() {
+		this.setMenuActive();
+		this.setClientLoadType();
+	}
+	,setClientLoadType: function() {
+		dtx.collection.ElementManipulation.setText(dtx.Tools.find("#load-type"),"PushState");
+		dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success");
+	}
+	,setMenuActive: function() {
+		var menu = dtx.Tools.find("#menu");
+		var $it0 = dtx.single.Traversing.children(menu.getNode(0)).iterator();
+		while( $it0.hasNext() ) {
+			var item = $it0.next();
+			dtx.single.ElementManipulation.removeClass(item,"active");
+			var href = dtx.single.ElementManipulation.attr(item.firstChild,"href");
+			if(href == this.uri) dtx.single.ElementManipulation.addClass(item,"active");
+		}
+		return this;
+	}
+	,__class__: UI
 };
 var XmlType = $hxClasses["XmlType"] = { __ename__ : ["XmlType"], __constructs__ : [] };
 XmlType.__empty_constructs__ = [];
@@ -2901,7 +2894,6 @@ dtx.single.Traversing.find = function(node,selector) {
 	}
 	return newDOMCollection;
 };
-var haxe = {};
 haxe.StackItem = $hxClasses["haxe.StackItem"] = { __ename__ : ["haxe","StackItem"], __constructs__ : ["CFunction","Module","FilePos","Method","LocalFunction"] };
 haxe.StackItem.CFunction = ["CFunction",0];
 haxe.StackItem.CFunction.toString = $estr;
@@ -3913,7 +3905,6 @@ haxe.Unserializer.prototype = {
 	}
 	,__class__: haxe.Unserializer
 };
-haxe.ds = {};
 haxe.ds.IntMap = function() {
 	this.h = { };
 };
@@ -3964,59 +3955,6 @@ haxe.ds.Option.None = ["None",1];
 haxe.ds.Option.None.toString = $estr;
 haxe.ds.Option.None.__enum__ = haxe.ds.Option;
 haxe.ds.Option.__empty_constructs__ = [haxe.ds.Option.None];
-haxe.ds.StringMap = function() {
-	this.h = { };
-};
-$hxClasses["haxe.ds.StringMap"] = haxe.ds.StringMap;
-haxe.ds.StringMap.__name__ = ["haxe","ds","StringMap"];
-haxe.ds.StringMap.__interfaces__ = [IMap];
-haxe.ds.StringMap.prototype = {
-	set: function(key,value) {
-		this.h["$" + key] = value;
-	}
-	,get: function(key) {
-		return this.h["$" + key];
-	}
-	,exists: function(key) {
-		return this.h.hasOwnProperty("$" + key);
-	}
-	,remove: function(key) {
-		key = "$" + key;
-		if(!this.h.hasOwnProperty(key)) return false;
-		delete(this.h[key]);
-		return true;
-	}
-	,keys: function() {
-		var a = [];
-		for( var key in this.h ) {
-		if(this.h.hasOwnProperty(key)) a.push(key.substr(1));
-		}
-		return HxOverrides.iter(a);
-	}
-	,iterator: function() {
-		return { ref : this.h, it : this.keys(), hasNext : function() {
-			return this.it.hasNext();
-		}, next : function() {
-			var i = this.it.next();
-			return this.ref["$" + i];
-		}};
-	}
-	,toString: function() {
-		var s = new StringBuf();
-		s.b += "{";
-		var it = this.keys();
-		while( it.hasNext() ) {
-			var i = it.next();
-			if(i == null) s.b += "null"; else s.b += "" + i;
-			s.b += " => ";
-			s.add(Std.string(this.get(i)));
-			if(it.hasNext()) s.b += ", ";
-		}
-		s.b += "}";
-		return s.b;
-	}
-	,__class__: haxe.ds.StringMap
-};
 haxe.io = {};
 haxe.io.Bytes = function(length,b) {
 	this.length = length;
@@ -9553,24 +9491,6 @@ ufront.web.result.EmptyResult.prototype = $extend(ufront.web.result.ActionResult
 	}
 	,__class__: ufront.web.result.EmptyResult
 });
-ufront.web.result.RedirectResult = function(url,permanentRedirect) {
-	if(permanentRedirect == null) permanentRedirect = false;
-	if(null == url) throw new thx.core.error.NullArgument("argument \"url\" cannot be null",{ fileName : "NullArgument.hx", lineNumber : 32, className : "ufront.web.result.RedirectResult", methodName : "new"});
-	this.url = url;
-	this.permanentRedirect = permanentRedirect;
-};
-$hxClasses["ufront.web.result.RedirectResult"] = ufront.web.result.RedirectResult;
-ufront.web.result.RedirectResult.__name__ = ["ufront","web","result","RedirectResult"];
-ufront.web.result.RedirectResult.__super__ = ufront.web.result.ActionResult;
-ufront.web.result.RedirectResult.prototype = $extend(ufront.web.result.ActionResult.prototype,{
-	executeResult: function(actionContext) {
-		actionContext.httpContext.response.clearContent();
-		actionContext.httpContext.response.clearHeaders();
-		if(this.permanentRedirect) actionContext.httpContext.response.permanentRedirect(this.url); else actionContext.httpContext.response.redirect(this.url);
-		return ufront.core.Sync.success();
-	}
-	,__class__: ufront.web.result.RedirectResult
-});
 ufront.web.session = {};
 ufront.web.session.UFHttpSession = function() { };
 $hxClasses["ufront.web.session.UFHttpSession"] = ufront.web.session.UFHttpSession;
@@ -10020,7 +9940,6 @@ Xml.Document = "document";
         };
       }
     ;
-Client.stateChangeCount = 0;
 ufront.web.context.HttpResponse.CONTENT_TYPE = "Content-type";
 ufront.web.context.HttpResponse.LOCATION = "Location";
 ufront.web.context.HttpResponse.DEFAULT_CONTENT_TYPE = "text/html";
@@ -10031,12 +9950,16 @@ ufront.web.context.HttpResponse.FOUND = 302;
 ufront.web.context.HttpResponse.UNAUTHORIZED = 401;
 ufront.web.context.HttpResponse.NOT_FOUND = 404;
 ufront.web.context.HttpResponse.INTERNAL_SERVER_ERROR = 500;
-CompileTimeClassList.__meta__ = { obj : { classLists : [["null,true,ufront.web.Controller","SubController,TestController,ufront.web.DefaultUfrontController"],["null,true,ufront.api.UFApi",""]]}};
-IsoResult.cache = new haxe.ds.StringMap();
+CompileTimeClassList.__meta__ = { obj : { classLists : [["null,true,ufront.web.Controller","IsoController,TestController,ufront.web.DefaultUfrontController"],["null,true,ufront.api.UFApi",""]]}};
 IMap.__meta__ = { obj : { 'interface' : null}};
+Iso.requestType = "UF-ISO-TYPE";
+Iso.REQ_TYPE_CLIENT = "CLIENT";
+Iso.REQ_TYPE_SERVER = "SERVER";
+Iso.stateChangeCount = 0;
+Iso.cache = new haxe.ds.StringMap();
 ufront.web.Controller.__meta__ = { fields : { context : { type : ["ufront.web.context.HttpContext"], inject : null}}};
-SubController.__meta__ = { fields : { subA : { wrapResult : [3]}, subB : { wrapResult : [3]}, subElse : { wrapResult : [3]}}};
-TestController.__meta__ = { fields : { index : { wrapResult : [3]}, home : { wrapResult : [3]}, muslim : { wrapResult : [3]}, christian : { wrapResult : [3]}, jedi : { wrapResult : [3]}, giraffe : { wrapResult : [3]}, staff : { wrapResult : [7]}, viewStaff : { wrapResult : [7]}, contact : { wrapResult : [7]}, contactPost : { wrapResult : [7]}, testcontent : { wrapResult : [3]}, pageCatchAll : { wrapResult : [3]}, redirect : { wrapResult : [3]}, async : { wrapResult : [4]}, execute_subController : { wrapResult : [0]}}};
+IsoController.__meta__ = { fields : { iso : { wrapResult : [4]}, isotest : { wrapResult : [4]}}};
+TestController.__meta__ = { fields : { index : { wrapResult : [3]}, home : { wrapResult : [3]}, jedi : { wrapResult : [3]}, giraffe : { wrapResult : [3]}, execute_isoController : { wrapResult : [0]}}};
 dtx.DOMType.DOCUMENT_NODE = 9;
 dtx.DOMType.ELEMENT_NODE = 1;
 dtx.DOMType.TEXT_NODE = 3;

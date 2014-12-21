@@ -21,46 +21,35 @@ class IsoResult  extends ufront.web.result.ActionResult
 	}
 	
 	override public function executeResult( actionContext:ActionContext ) {		
-		actionContext.httpContext.response.write( getContent(actionContext));
+		var html = getContent(actionContext);
+		actionContext.httpContext.response.write(html);
 		return ufront.core.Sync.success();						
 	}
-
 	
 	#if js
-	static var cache:Map<String, String> = new Map<String, String>();
 	private function getContent(actionContext:ActionContext) {		
 			var uri = actionContext.httpContext.request.uri;
-			/*
-			var useCache = (cache.exists(uri)) ; 
-			useCache = false;
-			
-			if (useCache) {
-				return cache.get(uri)  + '<p>From cache: TEST:$headerTEST</p>';				
-			} 			
-			cache.set(uri, this.content);
-			*/
 			return this.content;
 	}
-	
-	/*
-	private function loadContentAjax(uri:String) {
-		var loader = new XMLHttpRequest();
-		loader.open('GET', uri, false);
-		loader.addEventListener('load', function(_) {
-			var content = loader.response;
-		}, false);;
-	
-	}
-	*/
-	
 	#else
+	static var template = {
+		new Template(File.getContent(Sys.getCwd() + 'app/template.html'));
+	}
 	private function getContent(actionContext:ActionContext) {
-		
-		var testHeader = actionContext.httpContext.request.clientHeaders.get('UF-ISO-TYPE');
-		var testHeaderInfo = 'UF-ISO-TYPE: ' + testHeader;
-		
-		var template = new Template(File.getContent(Sys.getCwd() + 'template.html'));
-		return template.execute( { content: this.content + testHeaderInfo} );		
+		var requestType = actionContext.httpContext.request.clientHeaders.get(Iso.requestType);
+		actionContext.httpContext.ufTrace('Request type from header: $requestType');
+		var html =  switch requestType {
+			case Iso.REQ_TYPE_CLIENT: this.content;
+			case _: template.execute( { content: this.content} ); 
+		}
+		return html;
 	}	
 	#end
+	
+
+	
+	
+	
+	
+	
 }

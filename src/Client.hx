@@ -1,4 +1,5 @@
 package;
+import js.Browser;
 
 /**
  * Client
@@ -7,20 +8,19 @@ package;
 class Client 
 {
 	public static var app:ufront.app.UfrontApplication;
-	static var stateChangeCount = 0;
+	
 	static public function main() {		
 		init();			
 		pushstate.PushState.init();
 		pushstate.PushState.addEventListener(function (url) {
-			if (++stateChangeCount > 1) {
-				js.Browser.document.getElementById('load-type').innerHTML = "This content was a push-state";
-				
+			if (! Iso.isFirstRequest()) {
 				//haxe.Timer.delay(function() {
-					trace('client-side');
-					app.execute(new  ufront.web.context.HttpContext( new ClientRequest(), new ClientResponse()));
-				//}, 500);
+				app.execute(new  ufront.web.context.HttpContext( new ClientRequest(), new ClientResponse()));
+				//}, 1000);
 			}
 		});
+		Iso.initCache();
+		new UI(Browser.window.location.pathname).setMenuActive();
 	}
 
 	static function init() {		
@@ -46,8 +46,11 @@ class ClientRequest extends  ufront.web.context.HttpRequest {
 }
 
 class ClientResponse extends  ufront.web.context.HttpResponse {
-	public function new() super();
+	public function new() {
+		new UI(Browser.window.location.pathname).setUI();	
+		super();
+	}
 	override function flush() {				
 		js.Browser.document.getElementById('content').innerHTML = _buff.toString();
-	}	
+	}
 }

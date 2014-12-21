@@ -1,10 +1,14 @@
 package;
 
 
+import neko.ufront.web.context.HttpRequest;
+import neko.ufront.web.context.HttpResponse;
+import neko.Web;
 import ufront.app.UfrontApplication;
+import ufront.web.context.HttpContext;
 import ufront.web.result.RedirectResult;
 import ufront.web.UfrontConfiguration;
-
+using StringTools;
 
 class Server 
 {
@@ -14,6 +18,7 @@ class Server
 		init();			
 		//Sys.sleep(1); // simulating a slow server...
 		app.executeRequest();
+		//app.execute(new HttpContext(new HttpRequest(), new IsoServerResponse()));
 	}
 
 	static function init() {		

@@ -4,7 +4,7 @@
   <output>
     <movie outputType="Application" />
     <movie input="" />
-    <movie path="bin\Client.js" />
+    <movie path="bin\client.js" />
     <movie fps="0" />
     <movie width="0" />
     <movie height="0" />
@@ -42,7 +42,7 @@
   <!-- Executed before build -->
   <preBuildCommand />
   <!-- Executed after build -->
-  <postBuildCommand alwaysRun="False">haxe  -lib ufront-mvc -cp src -neko bin/index.n -D Server -main Server</postBuildCommand>
+  <postBuildCommand alwaysRun="False">haxe  -lib ufront-mvc -lib detox -cp src -neko bin/index.n -D Server -main Server</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
