@@ -21,7 +21,7 @@ The very first request is performed by the server. It loads the page content and
 
 Further clicks on menu items are controlled by the client. The pushstate handler ([also a work of Jason's](https://github.com/jasononeil/detox)) prevents performing a server request. (Note that the anchor tags in the bin/template.html has a rel="pushstate" attribute.) Instead the client side ufront instance is kicked off, and handles the page request in one of two ways: If the page is present in the clientside cache, it is served from there. If it isn't, then it is loaded using an ajax request (to the server version of "itself"! :-)
 
-Browser history navigation is taken care of by the client Pushstate wrapper.
+Browser history navigation is catched by the client Pushstate wrapper, and the client side app serves them (from cache or ajax loading, if needed).
 
 You can always do a page refresh for any valid url (for example by clicking F5 in the browser). The page is then fetched from the server and the client app is reloaded.
 
