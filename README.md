@@ -10,3 +10,8 @@ Usage
 
 Download or clone this repo.
 
+Navigate to the /bin directory and start a neko server there:
+`> nekotools server -rewrite`
+
+Surf to `http://localhost:2000`. You shoud see the home screen as above.
+
