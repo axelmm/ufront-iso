@@ -20,9 +20,9 @@ Surf to `http://localhost:2000`. You shoud see the home screen as above.
 Things to note
 --------------
 
-The very first request is performed by the server. (The only client-side things happening are setting the "active" class for the current menu item - but this could also be done serverside using Jason O'Neils' [Detox](https://github.com/jasononeil/detox)).
+The very first request is performed by the server. It loads the page content and wraps it into the page template (bin/template.html). (The only client-side things happening when browser loading is ready are setting the "active" class for the current menu item - but this could also be done serverside using Jason O'Neils' [Detox](https://github.com/jasononeil/detox)!).
 
-Further clicks on menu items are controlled by the client. The pushstate handler ([also a work of Jason's](https://github.com/jasononeil/detox)) prevents performing a server request. Instead the client side ufront instance is kicked off, and handles the page request in one of two ways: If the page is present in the clientside cache, it is served from there. If it isn't, then it is loaded using an ajax request (to the server version of "itself"! :-)
+Further clicks on menu items are controlled by the client. The pushstate handler ([also a work of Jason's](https://github.com/jasononeil/detox)) prevents performing a server request. (Note that the anchor tags in the bin/template.html has a rel="pushstate" attribute.) Instead the client side ufront instance is kicked off, and handles the page request in one of two ways: If the page is present in the clientside cache, it is served from there. If it isn't, then it is loaded using an ajax request (to the server version of "itself"! :-)
 
 Browser history navigation is taken care of by the client Pushstate wrapper.
 
