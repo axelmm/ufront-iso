@@ -24,7 +24,9 @@ class MainController extends  ufront.web.Controller {
 	// Should be factorzed away in a best practices web mvc manner, I guess...
 	//
 	#if Client
-	// The client uses a simple cahing mechanism for storing the content so that it could be reused when navigating back through the pushstate controlled browser history
+	// Loads the content part of the page using ajax.
+	// It also uses a simple cahing mechanism for storing the content so that it could be reused 
+	// when navigating back through the pushstate controlled browser history
 	// 
 	function loadContent(uri:String):Surprise<IsoResult, Error> {
 		
