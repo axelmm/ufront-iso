@@ -15,7 +15,9 @@ class TestController extends  ufront.web.Controller {
 	@:route( '/home' ) public function home() return index();
 	@:route( '/jedi' ) public function jedi()  return  new IsoResult("<h1>Jedi</h1>");
 	@:route( '/giraffe' ) public function giraffe()  return  new IsoResult("<h2>giraffe</h2>");
-	@:route( '/iso/*' ) public var isoController:IsoController;
+	@:route( '/iso/*' ) public var isoController:MainController;
+	
+	
 	
 	/*
 	function simulatedAsyncProcess(): Surprise<ContentResult, Error> {

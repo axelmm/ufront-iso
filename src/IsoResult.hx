@@ -20,36 +20,30 @@ class IsoResult  extends ufront.web.result.ActionResult
 		this.content = content;
 	}
 	
-	override public function executeResult( actionContext:ActionContext ) {		
-		var html = getContent(actionContext);
-		actionContext.httpContext.response.write(html);
+	override public function executeResult( actionContext:ActionContext ) {			
+		actionContext.httpContext.response.write(getContent(actionContext));
 		return ufront.core.Sync.success();						
 	}
 	
-	#if js
+	
 	private function getContent(actionContext:ActionContext) {		
-			var uri = actionContext.httpContext.request.uri;
+
+			#if neko
+				// Check if it is a standard request or an ajax request
+				var requestType = actionContext.httpContext.request.clientHeaders.get(Iso.REQUEST_TYPE);
+				
+				// If it isn't an ajax request
+				if  (requestType != Iso.AJAX) {
+					var template = new Template(File.getContent(Sys.getCwd() + 'app/template.html'));
+					// Wrap the content into a template
+					return  template.execute( { content: this.content } );			
+				}
+			#end
+			
+			// This will happen
+			// - When run on server as an ajax call
+			// - When run on client
 			return this.content;
 	}
-	#else
-	static var template = {
-		new Template(File.getContent(Sys.getCwd() + 'app/template.html'));
-	}
-	private function getContent(actionContext:ActionContext) {
-		var requestType = actionContext.httpContext.request.clientHeaders.get(Iso.requestTypeTag);
-		actionContext.httpContext.ufTrace('Request type from header: $requestType');
-		var html =  switch requestType {
-			case Iso.REQ_TYPE_CLIENT: this.content;
-			case _: template.execute( { content: this.content} ); 
-		}
-		return html;
-	}	
-	#end
-	
-
-	
-	
-	
-	
 	
 }

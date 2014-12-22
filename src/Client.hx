@@ -10,23 +10,29 @@ class Client
 	public static var app:ufront.app.UfrontApplication;
 	
 	static public function main() {		
-		init();			
+		init();				
 		pushstate.PushState.init();
 		pushstate.PushState.addEventListener(function (url) {
 			if (! Iso.isFirstRequest()) {
+				
+				// Timer can be used to dely the client side execution - useful when finding out what's going on...
 				//haxe.Timer.delay(function() {
-				app.execute(new  ufront.web.context.HttpContext( new ClientRequest(), new ClientResponse()));
+					Iso.displayPushstateLabel('PushState', 'label label-success');
+					app.execute(new  ufront.web.context.HttpContext( new ClientRequest(), new ClientResponse()));
 				//}, 1000);
 			}
+			Iso.setUI(Browser.window.location.pathname);
 		});
-		Iso.initCache();
-		new IsoUI(Browser.window.location.pathname).setMenuActive();
+		
+		// This is used to put the add the very first request to the client cache
+		Iso.addFirstRequestToCache();
+		
 	}
 
 	static function init() {		
 		if ( app==null ) {
 			var config:ufront.web.UfrontConfiguration = {
-				indexController: TestController,
+				indexController: MainController,
 				basePath: '/',				
 			}						
 			app = new ufront.app.UfrontApplication(config);
@@ -47,7 +53,7 @@ class ClientRequest extends  ufront.web.context.HttpRequest {
 
 class ClientResponse extends  ufront.web.context.HttpResponse {
 	public function new() {
-		new IsoUI(Browser.window.location.pathname).setUI();	
+		//Iso.setUI(Browser.window.location.pathname);	
 		super();
 	}
 	override function flush() {				

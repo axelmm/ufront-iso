@@ -2,7 +2,7 @@
 <project version="2">
   <!-- Output SWF options -->
   <output>
-    <movie outputType="Application" />
+    <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="bin\client.js" />
     <movie fps="0" />
@@ -40,7 +40,7 @@
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand />
+  <preBuildCommand>haxe  -lib ufront-mvc -lib detox -cp src -js bin/client.js -main Client</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False">haxe  -lib ufront-mvc -lib detox -cp src -neko bin/index.n -D Server -main Server</postBuildCommand>
   <!-- Other project options -->

@@ -1,0 +1,7 @@
+<div class="page-header"><h1>Info page</h1></div>
+
+<div class="row">
+	<div class="col-md-12">
+		This is information!
+	</div>
+</div>  	  

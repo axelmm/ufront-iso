@@ -1,2 +1,0 @@
-<h1>Isometric</h1>
-<p>A developer tool for interacting with web services and other web resources that lets you make HTTP requests, set the entity body, and content type. This allows you to interact with web services and inspect the results...</p>

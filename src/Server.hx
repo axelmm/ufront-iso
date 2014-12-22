@@ -24,7 +24,7 @@ class Server
 	static function init() {		
 		if ( app==null ) {
 			var config:UfrontConfiguration = {
-				indexController: TestController,
+				indexController: MainController,
 				//remotingApi: null,
 				//contentDirectory: null, 
 				//urlRewrite: false,
