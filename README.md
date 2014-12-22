@@ -1,7 +1,7 @@
 ufront-iso
 ==========
 
-Playground to learn [UFront](https://github.com/ufront) and to find out what's possible when it comes to isometric solutions (same code on client and server).
+Playground to learn [UFront](https://github.com/ufront) and to find out what's possible when it comes to isomorphic solutions (same code on client and server).
 
 DISCLAIMER: Don't expect anyting but basic experiments here. For the fun of learning and Haxing!
 
@@ -25,8 +25,11 @@ Browser history navigation is taken care of by the client Pushstate wrapper.
 
 You can always do a page refresh for any valid url (for example by clicking F5 in the browser). The page is then fetched from the server and the client app is reloaded.
 
-For further investigation: serverside dom manipulation
-------------------------------------------------------
+For further investigation
+-------------------------
+
+**Serverside dom manipulation**
+
 There are more to do when it comes to code sharing. The Detox library makes it possible to actually perform DOM opereations on the servere side in a JQuery-like manner. 
 This way, post-browser-load javascript ui adaption etc. coulb be (at least partly) eliminated.
 
@@ -42,6 +45,8 @@ The libraries needed for building this demo are [Detox](https://github.com/jason
 `> haxelib install detox`
 
 This will automatically isntall other dependencies, like `tink_core` and `tink_macro`. The Pushstate library is currently included in the /src directory.
+
+Running `> haxe build.hxml` builds two projects, the server as **bin/index.n** and the client as **bin/client.js**
 
 Thanks
 ------
