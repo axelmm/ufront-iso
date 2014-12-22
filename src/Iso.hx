@@ -8,7 +8,7 @@ import haxe.ds.StringMap;
  */
 class Iso 
 {
-	public static var requestTypeTag:String = 'UF-ISO-TYPE';
+	public static var UF_ISO_TYPE:String = 'UF_ISO_TYPE';
 	public static var REQ_TYPE_CLIENT:String = 'CLIENT';
 	public static var REQ_TYPE_SERVER:String = 'SERVER';
 	

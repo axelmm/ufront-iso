@@ -602,27 +602,27 @@ IsoController.prototype = $extend(ufront.web.Controller.prototype,{
 	}
 	,getContent: function(uri) {
 		var f = new tink.core.FutureTrigger();
-		if(!Iso.contentCache.exists(uri)) {
+		if(Iso.contentCache.exists(uri)) {
+			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-warning"),"PushState - cache");
+			var cachedContent = Iso.contentCache.get(uri);
+			var content = cachedContent;
+			f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
+		} else {
 			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-success"),"PushState - ajax");
-			this.ufTrace("Load from " + uri,{ fileName : "IsoController.hx", lineNumber : 25, className : "IsoController", methodName : "getContent"});
+			this.ufTrace("Load from " + uri,{ fileName : "IsoController.hx", lineNumber : 54, className : "IsoController", methodName : "getContent"});
 			var request = new XMLHttpRequest();
 			request.open("GET",uri);
 			request.setRequestHeader(Iso.requestTypeTag,Iso.REQ_TYPE_CLIENT);
 			request.onload = function(e) {
 				var requestResponse = request.response;
-				var content = requestResponse;
+				var content1 = requestResponse;
 				Iso.contentCache.set(uri,requestResponse);
-				f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
+				f.trigger(tink.core.Outcome.Success(new IsoResult(content1)));
 			};
 			request.onerror = function(e1) {
-				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "IsoController.hx", lineNumber : 36, className : "IsoController", methodName : "getContent"})));
+				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "IsoController.hx", lineNumber : 67, className : "IsoController", methodName : "getContent"})));
 			};
 			request.send(null);
-		} else {
-			dtx.collection.ElementManipulation.setText(dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class","label label-warning"),"PushState - cache");
-			var cachedContent = Iso.contentCache.get(uri);
-			var content1 = cachedContent;
-			f.trigger(tink.core.Outcome.Success(new IsoResult(content1)));
 		}
 		return f.future;
 	}
