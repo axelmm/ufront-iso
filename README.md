@@ -31,7 +31,7 @@ You can always do a page refresh for any valid url (for example by clicking F5 i
 Build
 -----
 
-The libraries neede for building this demo are [Detox](https://github.com/jasononeil/detox) (current version 1.0.0-rc2) and [ufront-mvx](https://github.com/ufront/ufront-mvc) (current version 1.0.0-rc9). They can be installed using haxelib:
+The libraries needed for building this demo are [Detox](https://github.com/jasononeil/detox) (current version 1.0.0-rc2) and [ufront-mvx](https://github.com/ufront/ufront-mvc) (current version 1.0.0-rc9). They can be installed using haxelib:
 
 `> haxelib install ufront-mvc`
 
