@@ -2677,7 +2677,7 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 		return new IsoResult("<div class='page-header'><h1>Contact Post</h1></div>" + Std.string(args));
 	}
 	,loadContent: function(uri) {
-		this.ufTrace(uri,{ fileName : "MainController.hx", lineNumber : 31, className : "MainController", methodName : "loadContent"});
+		this.ufTrace(uri,{ fileName : "MainController.hx", lineNumber : 33, className : "MainController", methodName : "loadContent"});
 		var f = new tink.core.FutureTrigger();
 		if(Iso.contentCache.exists(uri)) {
 			var cachedContent = Iso.contentCache.get(uri);
@@ -2685,7 +2685,7 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 			f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
 			Iso.setLoadinfoLabel("PushState - Loaded from cache","label label-warning");
 		} else {
-			this.ufTrace("Load from " + uri,{ fileName : "MainController.hx", lineNumber : 47, className : "MainController", methodName : "loadContent"});
+			this.ufTrace("Load from " + uri,{ fileName : "MainController.hx", lineNumber : 49, className : "MainController", methodName : "loadContent"});
 			var request = new XMLHttpRequest();
 			request.open("GET",uri);
 			request.setRequestHeader(Iso.REQUEST_TYPE,Iso.AJAX);
@@ -2697,7 +2697,7 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 				Iso.setLoadinfoLabel("PushState - Loaded using ajax","label label-success");
 			};
 			request.onerror = function(e1) {
-				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "MainController.hx", lineNumber : 61, className : "MainController", methodName : "loadContent"})));
+				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "MainController.hx", lineNumber : 63, className : "MainController", methodName : "loadContent"})));
 			};
 			request.send(null);
 		}
