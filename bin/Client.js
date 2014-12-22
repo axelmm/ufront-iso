@@ -679,267 +679,6 @@ Bools.parse = function(s) {
 Bools.compare = function(a,b) {
 	if(a == b) return 0; else if(a) return -1; else return 1;
 };
-var Client = function() { };
-$hxClasses["Client"] = Client;
-Client.__name__ = ["Client"];
-Client.main = function() {
-	Client.init();
-	pushstate.PushState.init();
-	pushstate.PushState.addEventListener(null,function(url) {
-		if(!Iso.isFirstRequest()) {
-			Iso.displayPushstateLabel("PushState","label label-success");
-			Client.app.execute(new ufront.web.context.HttpContext(new ClientRequest(),new ClientResponse()));
-		}
-		Iso.setUI(window.location.pathname);
-	});
-	Iso.addFirstRequestToCache();
-};
-Client.init = function() {
-	if(Client.app == null) {
-		var config = { indexController : MainController, basePath : "/"};
-		Client.app = new ufront.app.UfrontApplication(config);
-	}
-};
-var ufront = {};
-ufront.web = {};
-ufront.web.context = {};
-ufront.web.context.HttpRequest = function() { };
-$hxClasses["ufront.web.context.HttpRequest"] = ufront.web.context.HttpRequest;
-ufront.web.context.HttpRequest.__name__ = ["ufront","web","context","HttpRequest"];
-ufront.web.context.HttpRequest.create = function() {
-	throw new thx.error.NotImplemented({ fileName : "HttpRequest.hx", lineNumber : 34, className : "ufront.web.context.HttpRequest", methodName : "create"});
-};
-ufront.web.context.HttpRequest.prototype = {
-	params: null
-	,get_params: function() {
-		if(null == this.params) this.params = ufront.core._MultiValueMap.MultiValueMap_Impl_.combine([this.get_cookies(),this.get_query(),this.get_post()]);
-		return this.params;
-	}
-	,queryString: null
-	,get_queryString: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 65, className : "ufront.web.context.HttpRequest", methodName : "get_queryString"});
-	}
-	,postString: null
-	,get_postString: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 73, className : "ufront.web.context.HttpRequest", methodName : "get_postString"});
-	}
-	,query: null
-	,get_query: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 79, className : "ufront.web.context.HttpRequest", methodName : "get_query"});
-	}
-	,post: null
-	,get_post: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 92, className : "ufront.web.context.HttpRequest", methodName : "get_post"});
-	}
-	,files: null
-	,get_files: function() {
-		if(null == this.files) this.files = new haxe.ds.StringMap();
-		return this.files;
-	}
-	,cookies: null
-	,get_cookies: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 111, className : "ufront.web.context.HttpRequest", methodName : "get_cookies"});
-	}
-	,hostName: null
-	,get_hostName: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 117, className : "ufront.web.context.HttpRequest", methodName : "get_hostName"});
-	}
-	,clientIP: null
-	,get_clientIP: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 123, className : "ufront.web.context.HttpRequest", methodName : "get_clientIP"});
-	}
-	,uri: null
-	,get_uri: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 132, className : "ufront.web.context.HttpRequest", methodName : "get_uri"});
-	}
-	,clientHeaders: null
-	,get_clientHeaders: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 139, className : "ufront.web.context.HttpRequest", methodName : "get_clientHeaders"});
-	}
-	,userAgent: null
-	,get_userAgent: function() {
-		if(this.userAgent == null) this.userAgent = ufront.web.UserAgent.fromString(ufront.core._MultiValueMap.MultiValueMap_Impl_.get(this.get_clientHeaders(),"User-Agent"));
-		return this.userAgent;
-	}
-	,httpMethod: null
-	,get_httpMethod: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 159, className : "ufront.web.context.HttpRequest", methodName : "get_httpMethod"});
-	}
-	,scriptDirectory: null
-	,get_scriptDirectory: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 171, className : "ufront.web.context.HttpRequest", methodName : "get_scriptDirectory"});
-	}
-	,authorization: null
-	,get_authorization: function() {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 183, className : "ufront.web.context.HttpRequest", methodName : "get_authorization"});
-	}
-	,isMultipart: function() {
-		return (function($this) {
-			var $r;
-			var this1 = $this.get_clientHeaders();
-			$r = this1.exists("Content-Type");
-			return $r;
-		}(this)) && StringTools.startsWith(ufront.core._MultiValueMap.MultiValueMap_Impl_.get(this.get_clientHeaders(),"Content-Type"),"multipart/form-data");
-	}
-	,parseMultipart: function(onPart,onData,onEndPart) {
-		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 219, className : "ufront.web.context.HttpRequest", methodName : "parseMultipart"});
-	}
-	,__class__: ufront.web.context.HttpRequest
-	,__properties__: {get_authorization:"get_authorization",get_scriptDirectory:"get_scriptDirectory",get_httpMethod:"get_httpMethod",get_userAgent:"get_userAgent",get_clientHeaders:"get_clientHeaders",get_uri:"get_uri",get_clientIP:"get_clientIP",get_hostName:"get_hostName",get_cookies:"get_cookies",get_files:"get_files",get_post:"get_post",get_query:"get_query",get_postString:"get_postString",get_queryString:"get_queryString",get_params:"get_params"}
-};
-var ClientRequest = function() {
-};
-$hxClasses["ClientRequest"] = ClientRequest;
-ClientRequest.__name__ = ["ClientRequest"];
-ClientRequest.__super__ = ufront.web.context.HttpRequest;
-ClientRequest.prototype = $extend(ufront.web.context.HttpRequest.prototype,{
-	get_uri: function() {
-		return window.location.pathname;
-	}
-	,get_scriptDirectory: function() {
-		return null;
-	}
-	,get_httpMethod: function() {
-		return "GET";
-	}
-	,get_clientHeaders: function() {
-		return new haxe.ds.StringMap();
-	}
-	,get_cookies: function() {
-		return new haxe.ds.StringMap();
-	}
-	,get_query: function() {
-		return new haxe.ds.StringMap();
-	}
-	,get_post: function() {
-		return new haxe.ds.StringMap();
-	}
-	,__class__: ClientRequest
-});
-ufront.web.context.HttpResponse = function() {
-	this.clear();
-	this._flushed = false;
-};
-$hxClasses["ufront.web.context.HttpResponse"] = ufront.web.context.HttpResponse;
-ufront.web.context.HttpResponse.__name__ = ["ufront","web","context","HttpResponse"];
-ufront.web.context.HttpResponse.create = function() {
-	return new ufront.web.context.HttpResponse();
-};
-ufront.web.context.HttpResponse.prototype = {
-	charset: null
-	,status: null
-	,_buff: null
-	,_headers: null
-	,_cookies: null
-	,_flushed: null
-	,preventFlush: function() {
-		this._flushed = true;
-	}
-	,flush: function() {
-		throw new thx.error.NotImplemented({ fileName : "HttpResponse.hx", lineNumber : 108, className : "ufront.web.context.HttpResponse", methodName : "flush"});
-	}
-	,clear: function() {
-		this.clearCookies();
-		this.clearHeaders();
-		this.clearContent();
-		this.set_contentType(null);
-		this.charset = "utf-8";
-		this.status = 200;
-	}
-	,clearCookies: function() {
-		this._cookies = new haxe.ds.StringMap();
-	}
-	,clearContent: function() {
-		this._buff = new StringBuf();
-	}
-	,clearHeaders: function() {
-		this._headers = new thx.collection.HashList();
-	}
-	,write: function(s) {
-		if(null != s) if(s == null) this._buff.b += "null"; else this._buff.b += "" + s;
-	}
-	,writeChar: function(c) {
-		this._buff.b += String.fromCharCode(c);
-	}
-	,writeBytes: function(b,pos,len) {
-		this._buff.add(b.getString(pos,len));
-	}
-	,setHeader: function(name,value) {
-		if(null == name) throw new thx.error.NullArgument("name","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "HttpResponse.hx", lineNumber : 169, className : "ufront.web.context.HttpResponse", methodName : "setHeader"});
-		if(null == value) throw new thx.error.NullArgument("value","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "HttpResponse.hx", lineNumber : 170, className : "ufront.web.context.HttpResponse", methodName : "setHeader"});
-		this._headers.set(name,value);
-	}
-	,setCookie: function(cookie) {
-		this._cookies.set(cookie.name,cookie);
-	}
-	,getBuffer: function() {
-		return this._buff.b;
-	}
-	,getCookies: function() {
-		return this._cookies;
-	}
-	,getHeaders: function() {
-		return this._headers;
-	}
-	,redirect: function(url) {
-		this.status = 302;
-		this.set_redirectLocation(url);
-	}
-	,setOk: function() {
-		this.status = 200;
-	}
-	,setUnauthorized: function() {
-		this.status = 401;
-	}
-	,requireAuthentication: function(message) {
-		this.setUnauthorized();
-		this.setHeader("WWW-Authenticate","Basic realm=\"" + message + "\"");
-	}
-	,setNotFound: function() {
-		this.status = 404;
-	}
-	,setInternalError: function() {
-		this.status = 500;
-	}
-	,permanentRedirect: function(url) {
-		this.status = 301;
-		this.set_redirectLocation(url);
-	}
-	,isRedirect: function() {
-		return Math.floor(this.status / 100) == 3;
-	}
-	,isPermanentRedirect: function() {
-		return this.status == 301;
-	}
-	,get_contentType: function() {
-		return this._headers.get("Content-type");
-	}
-	,set_contentType: function(v) {
-		if(null == v) this._headers.set("Content-type","text/html"); else this._headers.set("Content-type",v);
-		return v;
-	}
-	,get_redirectLocation: function() {
-		return this._headers.get("Location");
-	}
-	,set_redirectLocation: function(v) {
-		if(null == v) this._headers.remove("Location"); else this._headers.set("Location",v);
-		return v;
-	}
-	,__class__: ufront.web.context.HttpResponse
-	,__properties__: {set_redirectLocation:"set_redirectLocation",get_redirectLocation:"get_redirectLocation",set_contentType:"set_contentType",get_contentType:"get_contentType"}
-};
-var ClientResponse = function() {
-	ufront.web.context.HttpResponse.call(this);
-};
-$hxClasses["ClientResponse"] = ClientResponse;
-ClientResponse.__name__ = ["ClientResponse"];
-ClientResponse.__super__ = ufront.web.context.HttpResponse;
-ClientResponse.prototype = $extend(ufront.web.context.HttpResponse.prototype,{
-	flush: function() {
-		window.document.getElementById("content").innerHTML = this._buff.b;
-	}
-	,__class__: ClientResponse
-});
 var CompileTime = function() { };
 $hxClasses["CompileTime"] = CompileTime;
 CompileTime.__name__ = ["CompileTime"];
@@ -2257,7 +1996,7 @@ Iso.setUI = function(uri) {
 		} else dtx.single.ElementManipulation.removeClass(item,"active");
 	}
 };
-Iso.displayPushstateLabel = function(text,clss) {
+Iso.setLoadinfoLabel = function(text,clss) {
 	dtx.collection.ElementManipulation.setText(dtx.Tools.find("#load-type"),text);
 	dtx.collection.ElementManipulation.setAttr(dtx.Tools.find("#load-type"),"class",clss);
 };
@@ -2274,6 +2013,8 @@ Iso.addFirstRequestToCache = function() {
 	var url = window.location.pathname;
 	Iso.contentCache.set(url,content);
 };
+var ufront = {};
+ufront.web = {};
 ufront.web.result = {};
 ufront.web.result.ActionResult = function() { };
 $hxClasses["ufront.web.result.ActionResult"] = ufront.web.result.ActionResult;
@@ -2300,7 +2041,8 @@ IsoResult.__super__ = ufront.web.result.ActionResult;
 IsoResult.prototype = $extend(ufront.web.result.ActionResult.prototype,{
 	content: null
 	,executeResult: function(actionContext) {
-		actionContext.httpContext.response.write(this.getContent(actionContext));
+		var content = this.getContent(actionContext);
+		actionContext.httpContext.response.write(content);
 		return ufront.core.Sync.success();
 	}
 	,getContent: function(actionContext) {
@@ -2570,6 +2312,264 @@ List.prototype = {
 	}
 	,__class__: List
 };
+var Main = function() { };
+$hxClasses["Main"] = Main;
+Main.__name__ = ["Main"];
+Main.main = function() {
+	Main.initApplication();
+	pushstate.PushState.init();
+	pushstate.PushState.addEventListener(null,function(url) {
+		if(!Iso.isFirstRequest()) Main.app.execute(new ufront.web.context.HttpContext(new ClientRequest(),new ClientResponse()));
+		Iso.setUI(window.location.pathname);
+	});
+	Iso.addFirstRequestToCache();
+};
+Main.initApplication = function() {
+	if(Main.app == null) {
+		var config = { indexController : MainController, basePath : "/"};
+		Main.app = new ufront.app.UfrontApplication(config);
+	}
+};
+ufront.web.context = {};
+ufront.web.context.HttpRequest = function() { };
+$hxClasses["ufront.web.context.HttpRequest"] = ufront.web.context.HttpRequest;
+ufront.web.context.HttpRequest.__name__ = ["ufront","web","context","HttpRequest"];
+ufront.web.context.HttpRequest.create = function() {
+	throw new thx.error.NotImplemented({ fileName : "HttpRequest.hx", lineNumber : 34, className : "ufront.web.context.HttpRequest", methodName : "create"});
+};
+ufront.web.context.HttpRequest.prototype = {
+	params: null
+	,get_params: function() {
+		if(null == this.params) this.params = ufront.core._MultiValueMap.MultiValueMap_Impl_.combine([this.get_cookies(),this.get_query(),this.get_post()]);
+		return this.params;
+	}
+	,queryString: null
+	,get_queryString: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 65, className : "ufront.web.context.HttpRequest", methodName : "get_queryString"});
+	}
+	,postString: null
+	,get_postString: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 73, className : "ufront.web.context.HttpRequest", methodName : "get_postString"});
+	}
+	,query: null
+	,get_query: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 79, className : "ufront.web.context.HttpRequest", methodName : "get_query"});
+	}
+	,post: null
+	,get_post: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 92, className : "ufront.web.context.HttpRequest", methodName : "get_post"});
+	}
+	,files: null
+	,get_files: function() {
+		if(null == this.files) this.files = new haxe.ds.StringMap();
+		return this.files;
+	}
+	,cookies: null
+	,get_cookies: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 111, className : "ufront.web.context.HttpRequest", methodName : "get_cookies"});
+	}
+	,hostName: null
+	,get_hostName: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 117, className : "ufront.web.context.HttpRequest", methodName : "get_hostName"});
+	}
+	,clientIP: null
+	,get_clientIP: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 123, className : "ufront.web.context.HttpRequest", methodName : "get_clientIP"});
+	}
+	,uri: null
+	,get_uri: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 132, className : "ufront.web.context.HttpRequest", methodName : "get_uri"});
+	}
+	,clientHeaders: null
+	,get_clientHeaders: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 139, className : "ufront.web.context.HttpRequest", methodName : "get_clientHeaders"});
+	}
+	,userAgent: null
+	,get_userAgent: function() {
+		if(this.userAgent == null) this.userAgent = ufront.web.UserAgent.fromString(ufront.core._MultiValueMap.MultiValueMap_Impl_.get(this.get_clientHeaders(),"User-Agent"));
+		return this.userAgent;
+	}
+	,httpMethod: null
+	,get_httpMethod: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 159, className : "ufront.web.context.HttpRequest", methodName : "get_httpMethod"});
+	}
+	,scriptDirectory: null
+	,get_scriptDirectory: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 171, className : "ufront.web.context.HttpRequest", methodName : "get_scriptDirectory"});
+	}
+	,authorization: null
+	,get_authorization: function() {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 183, className : "ufront.web.context.HttpRequest", methodName : "get_authorization"});
+	}
+	,isMultipart: function() {
+		return (function($this) {
+			var $r;
+			var this1 = $this.get_clientHeaders();
+			$r = this1.exists("Content-Type");
+			return $r;
+		}(this)) && StringTools.startsWith(ufront.core._MultiValueMap.MultiValueMap_Impl_.get(this.get_clientHeaders(),"Content-Type"),"multipart/form-data");
+	}
+	,parseMultipart: function(onPart,onData,onEndPart) {
+		throw new thx.error.AbstractMethod({ fileName : "HttpRequest.hx", lineNumber : 219, className : "ufront.web.context.HttpRequest", methodName : "parseMultipart"});
+	}
+	,__class__: ufront.web.context.HttpRequest
+	,__properties__: {get_authorization:"get_authorization",get_scriptDirectory:"get_scriptDirectory",get_httpMethod:"get_httpMethod",get_userAgent:"get_userAgent",get_clientHeaders:"get_clientHeaders",get_uri:"get_uri",get_clientIP:"get_clientIP",get_hostName:"get_hostName",get_cookies:"get_cookies",get_files:"get_files",get_post:"get_post",get_query:"get_query",get_postString:"get_postString",get_queryString:"get_queryString",get_params:"get_params"}
+};
+var ClientRequest = function() {
+};
+$hxClasses["ClientRequest"] = ClientRequest;
+ClientRequest.__name__ = ["ClientRequest"];
+ClientRequest.__super__ = ufront.web.context.HttpRequest;
+ClientRequest.prototype = $extend(ufront.web.context.HttpRequest.prototype,{
+	get_uri: function() {
+		return window.location.pathname;
+	}
+	,get_scriptDirectory: function() {
+		return null;
+	}
+	,get_httpMethod: function() {
+		return "GET";
+	}
+	,get_clientHeaders: function() {
+		return new haxe.ds.StringMap();
+	}
+	,get_cookies: function() {
+		return new haxe.ds.StringMap();
+	}
+	,get_query: function() {
+		return new haxe.ds.StringMap();
+	}
+	,get_post: function() {
+		return new haxe.ds.StringMap();
+	}
+	,__class__: ClientRequest
+});
+ufront.web.context.HttpResponse = function() {
+	this.clear();
+	this._flushed = false;
+};
+$hxClasses["ufront.web.context.HttpResponse"] = ufront.web.context.HttpResponse;
+ufront.web.context.HttpResponse.__name__ = ["ufront","web","context","HttpResponse"];
+ufront.web.context.HttpResponse.create = function() {
+	return new ufront.web.context.HttpResponse();
+};
+ufront.web.context.HttpResponse.prototype = {
+	charset: null
+	,status: null
+	,_buff: null
+	,_headers: null
+	,_cookies: null
+	,_flushed: null
+	,preventFlush: function() {
+		this._flushed = true;
+	}
+	,flush: function() {
+		throw new thx.error.NotImplemented({ fileName : "HttpResponse.hx", lineNumber : 108, className : "ufront.web.context.HttpResponse", methodName : "flush"});
+	}
+	,clear: function() {
+		this.clearCookies();
+		this.clearHeaders();
+		this.clearContent();
+		this.set_contentType(null);
+		this.charset = "utf-8";
+		this.status = 200;
+	}
+	,clearCookies: function() {
+		this._cookies = new haxe.ds.StringMap();
+	}
+	,clearContent: function() {
+		this._buff = new StringBuf();
+	}
+	,clearHeaders: function() {
+		this._headers = new thx.collection.HashList();
+	}
+	,write: function(s) {
+		if(null != s) if(s == null) this._buff.b += "null"; else this._buff.b += "" + s;
+	}
+	,writeChar: function(c) {
+		this._buff.b += String.fromCharCode(c);
+	}
+	,writeBytes: function(b,pos,len) {
+		this._buff.add(b.getString(pos,len));
+	}
+	,setHeader: function(name,value) {
+		if(null == name) throw new thx.error.NullArgument("name","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "HttpResponse.hx", lineNumber : 169, className : "ufront.web.context.HttpResponse", methodName : "setHeader"});
+		if(null == value) throw new thx.error.NullArgument("value","invalid null argument '{0}' for method {1}.{2}()",{ fileName : "HttpResponse.hx", lineNumber : 170, className : "ufront.web.context.HttpResponse", methodName : "setHeader"});
+		this._headers.set(name,value);
+	}
+	,setCookie: function(cookie) {
+		this._cookies.set(cookie.name,cookie);
+	}
+	,getBuffer: function() {
+		return this._buff.b;
+	}
+	,getCookies: function() {
+		return this._cookies;
+	}
+	,getHeaders: function() {
+		return this._headers;
+	}
+	,redirect: function(url) {
+		this.status = 302;
+		this.set_redirectLocation(url);
+	}
+	,setOk: function() {
+		this.status = 200;
+	}
+	,setUnauthorized: function() {
+		this.status = 401;
+	}
+	,requireAuthentication: function(message) {
+		this.setUnauthorized();
+		this.setHeader("WWW-Authenticate","Basic realm=\"" + message + "\"");
+	}
+	,setNotFound: function() {
+		this.status = 404;
+	}
+	,setInternalError: function() {
+		this.status = 500;
+	}
+	,permanentRedirect: function(url) {
+		this.status = 301;
+		this.set_redirectLocation(url);
+	}
+	,isRedirect: function() {
+		return Math.floor(this.status / 100) == 3;
+	}
+	,isPermanentRedirect: function() {
+		return this.status == 301;
+	}
+	,get_contentType: function() {
+		return this._headers.get("Content-type");
+	}
+	,set_contentType: function(v) {
+		if(null == v) this._headers.set("Content-type","text/html"); else this._headers.set("Content-type",v);
+		return v;
+	}
+	,get_redirectLocation: function() {
+		return this._headers.get("Location");
+	}
+	,set_redirectLocation: function(v) {
+		if(null == v) this._headers.remove("Location"); else this._headers.set("Location",v);
+		return v;
+	}
+	,__class__: ufront.web.context.HttpResponse
+	,__properties__: {set_redirectLocation:"set_redirectLocation",get_redirectLocation:"get_redirectLocation",set_contentType:"set_contentType",get_contentType:"get_contentType"}
+};
+var ClientResponse = function() {
+	ufront.web.context.HttpResponse.call(this);
+	Iso.setLoadinfoLabel("PushState","label label-success");
+};
+$hxClasses["ClientResponse"] = ClientResponse;
+ClientResponse.__name__ = ["ClientResponse"];
+ClientResponse.__super__ = ufront.web.context.HttpResponse;
+ClientResponse.prototype = $extend(ufront.web.context.HttpResponse.prototype,{
+	flush: function() {
+		var contentHtml = this._buff.b;
+		window.document.getElementById("content").innerHTML = contentHtml;
+	}
+	,__class__: ClientResponse
+});
 ufront.web.Controller = function() {
 };
 $hxClasses["ufront.web.Controller"] = ufront.web.Controller;
@@ -2659,7 +2659,7 @@ MainController.__name__ = ["MainController"];
 MainController.__super__ = ufront.web.Controller;
 MainController.prototype = $extend(ufront.web.Controller.prototype,{
 	index: function() {
-		return this.getIsoContent("/home");
+		return this.loadContent(this.context.request.get_uri());
 	}
 	,home: function() {
 		return this.index();
@@ -2668,7 +2668,7 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 		return new IsoResult("<div class=\"page-header\"><h1>No pushstate</h1></div><p>This is a standard request - no pushstate is used here</p>");
 	}
 	,info: function() {
-		return this.getIsoContent(this.context.request.get_uri());
+		return this.loadContent(this.context.request.get_uri());
 	}
 	,contact: function() {
 		return new IsoResult("<div class='page-header'><h1>Contact</h1></div><p>The form submit is handled just as a normal server request - no pushstate or isometric stuff.</p><form method='POST' action='/contact/'><div class='col-xs-3'><p>Name:<br/><input name='name' class='form-control'/></p><p>Age:<br/><input name='age' class='form-control' /></p><input type='submit'/></div></form>");
@@ -2676,17 +2676,16 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 	,contactPost: function(args) {
 		return new IsoResult("<div class='page-header'><h1>Contact Post</h1></div>" + Std.string(args));
 	}
-	,getIsoContent: function(uri) {
-		this.ufTrace(uri,{ fileName : "MainController.hx", lineNumber : 29, className : "MainController", methodName : "getIsoContent"});
+	,loadContent: function(uri) {
+		this.ufTrace(uri,{ fileName : "MainController.hx", lineNumber : 31, className : "MainController", methodName : "loadContent"});
 		var f = new tink.core.FutureTrigger();
 		if(Iso.contentCache.exists(uri)) {
-			Iso.displayPushstateLabel("PushState - Loaded from cache","label label-warning");
 			var cachedContent = Iso.contentCache.get(uri);
 			var content = cachedContent;
 			f.trigger(tink.core.Outcome.Success(new IsoResult(content)));
+			Iso.setLoadinfoLabel("PushState - Loaded from cache","label label-warning");
 		} else {
-			Iso.displayPushstateLabel("PushState - Loaded using ajax","label label-success");
-			this.ufTrace("Load from " + uri,{ fileName : "MainController.hx", lineNumber : 45, className : "MainController", methodName : "getIsoContent"});
+			this.ufTrace("Load from " + uri,{ fileName : "MainController.hx", lineNumber : 47, className : "MainController", methodName : "loadContent"});
 			var request = new XMLHttpRequest();
 			request.open("GET",uri);
 			request.setRequestHeader(Iso.REQUEST_TYPE,Iso.AJAX);
@@ -2695,9 +2694,10 @@ MainController.prototype = $extend(ufront.web.Controller.prototype,{
 				var content1 = requestResponse;
 				Iso.contentCache.set(uri,requestResponse);
 				f.trigger(tink.core.Outcome.Success(new IsoResult(content1)));
+				Iso.setLoadinfoLabel("PushState - Loaded using ajax","label label-success");
 			};
 			request.onerror = function(e1) {
-				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "MainController.hx", lineNumber : 58, className : "MainController", methodName : "getIsoContent"})));
+				f.trigger(tink.core.Outcome.Failure(new tink.core.TypedError(null,"Can' load from " + uri,{ fileName : "MainController.hx", lineNumber : 61, className : "MainController", methodName : "loadContent"})));
 			};
 			request.send(null);
 		}
@@ -12251,16 +12251,6 @@ Xml.ProcessingInstruction = "processingInstruction";
 Xml.Document = "document";
 thx.languages.En.get_language();
 thx.cultures.EnUS.get_culture();
-ufront.web.context.HttpResponse.CONTENT_TYPE = "Content-type";
-ufront.web.context.HttpResponse.LOCATION = "Location";
-ufront.web.context.HttpResponse.DEFAULT_CONTENT_TYPE = "text/html";
-ufront.web.context.HttpResponse.DEFAULT_CHARSET = "utf-8";
-ufront.web.context.HttpResponse.DEFAULT_STATUS = 200;
-ufront.web.context.HttpResponse.MOVED_PERMANENTLY = 301;
-ufront.web.context.HttpResponse.FOUND = 302;
-ufront.web.context.HttpResponse.UNAUTHORIZED = 401;
-ufront.web.context.HttpResponse.NOT_FOUND = 404;
-ufront.web.context.HttpResponse.INTERNAL_SERVER_ERROR = 500;
 CompileTimeClassList.__meta__ = { obj : { classLists : [["null,true,ufront.web.Controller","MainController,ufront.web.DefaultUfrontController"],["null,true,ufront.api.UFApi",""]]}};
 DateTools.DAYS_OF_MONTH = [31,28,31,30,31,30,31,31,30,31,30,31];
 Dates._reparse = new EReg("^\\d{4}-\\d\\d-\\d\\d(( |T)\\d\\d:\\d\\d(:\\d\\d(\\.\\d{1,3})?)?)?Z?$","");
@@ -12292,6 +12282,16 @@ Iso.AJAX = "AJAX";
 Iso.REQ_TYPE_SERVER = "SERVER";
 Iso.stateChangeCount = 0;
 Iso.contentCache = new haxe.ds.StringMap();
+ufront.web.context.HttpResponse.CONTENT_TYPE = "Content-type";
+ufront.web.context.HttpResponse.LOCATION = "Location";
+ufront.web.context.HttpResponse.DEFAULT_CONTENT_TYPE = "text/html";
+ufront.web.context.HttpResponse.DEFAULT_CHARSET = "utf-8";
+ufront.web.context.HttpResponse.DEFAULT_STATUS = 200;
+ufront.web.context.HttpResponse.MOVED_PERMANENTLY = 301;
+ufront.web.context.HttpResponse.FOUND = 302;
+ufront.web.context.HttpResponse.UNAUTHORIZED = 401;
+ufront.web.context.HttpResponse.NOT_FOUND = 404;
+ufront.web.context.HttpResponse.INTERNAL_SERVER_ERROR = 500;
 ufront.web.Controller.__meta__ = { fields : { context : { type : ["ufront.web.context.HttpContext"], inject : null}}};
 MainController.__meta__ = { fields : { index : { wrapResult : [4]}, home : { wrapResult : [4]}, noPS : { wrapResult : [3]}, info : { wrapResult : [4]}, contact : { wrapResult : [3]}, contactPost : { wrapResult : [3]}}};
 Strings._re = new EReg("[{](\\d+)(?::[^}]*)?[}]","m");
@@ -12390,5 +12390,5 @@ ufront.web.session.FileSession.validID = new EReg("^[a-zA-Z0-9]+$","");
 ufront.web.upload.FileUpload.__meta__ = { obj : { 'interface' : null}};
 ufront.web.upload.TmpFileUploadMiddleware.subDir = "uf-upload-tmp";
 ufront.web.url.filter.UFUrlFilter.__meta__ = { obj : { 'interface' : null}};
-Client.main();
+Main.main();
 })();

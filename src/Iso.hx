@@ -25,7 +25,7 @@ class Iso
 		}
 	}
 	
-	public static  function displayPushstateLabel(text:String, clss:String) {
+	public static  function setLoadinfoLabel(text:String, clss:String) {
 		'#load-type'.find().setText(text);
 		'#load-type'.find().setAttr('class', clss);			
 	}

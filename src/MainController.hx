@@ -11,37 +11,39 @@ using StringTools;
  */
 class MainController extends  ufront.web.Controller {	
 	
-	@:route( '/' ) public function index() return getIsoContent('/home');	
+	@:route( '/' ) public function index() return loadContent(this.context.request.uri);	
 	@:route( '/home' ) public function home() return index();
 	@:route( '/nops' ) public function noPS() return new IsoResult('<div class="page-header"><h1>No pushstate</h1></div><p>This is a standard request - no pushstate is used here</p>') ;
-	@:route( '/info' ) public function info() return  getIsoContent(this.context.request.uri);
+	@:route( '/info' ) public function info() return  loadContent(this.context.request.uri);
 	
 	@:route( '/contact/', GET ) public function contact() return new IsoResult("<div class='page-header'><h1>Contact</h1></div><p>The form submit is handled just as a normal server request - no pushstate or isometric stuff.</p><form method='POST' action='/contact/'><div class='col-xs-3'><p>Name:<br/><input name='name' class='form-control'/></p><p>Age:<br/><input name='age' class='form-control' /></p><input type='submit'/></div></form>");
 	@:route( '/contact/', POST ) public function contactPost( args: { ?name:String, ?age:Int}) return new IsoResult("<div class='page-header'><h1>Contact Post</h1></div>" + Std.string(args)); 
 	
 	//===========================================================================
-	// Model stuff
+	// Model stuff here
+	// Should be factorzed away in a best practices web mvc manner, I guess...
 	//
-	// Client
-	#if js
-	function getIsoContent(uri:String):Surprise<IsoResult, Error> {
+	#if Client
+	// The client uses a simple cahing mechanism for storing the content so that it could be reused when navigating back through the pushstate controlled browser history
+	// 
+	function loadContent(uri:String):Surprise<IsoResult, Error> {
 		
 			this.ufTrace(uri);
 		
 			var f = Future.trigger();		
 	
 			// First, check if the content has been cached:			
+			
 			if (Iso.contentCache.exists(uri)) {
 				
 				// Get content from client cache
-				Iso.displayPushstateLabel('PushState - Loaded from cache', 'label label-warning');
 				var cachedContent = Iso.contentCache.get(uri);
 				var content = cachedContent;
 				f.trigger(Success( new IsoResult( content)));
-			} else {
+				Iso.setLoadinfoLabel('PushState - Loaded from cache', 'label label-warning');
 				
-				// Load content by XHTTPRequest
-				Iso.displayPushstateLabel('PushState - Loaded using ajax', 'label label-success');
+			} else {	 // If not in the cache, load it by ajax 
+				
 				this.ufTrace('Load from ' + uri);
 				var request = new js.html.XMLHttpRequest(); 
 				request.open('GET', uri);
@@ -53,31 +55,43 @@ class MainController extends  ufront.web.Controller {
 					var content = requestResponse;
 					Iso.contentCache.set(uri, requestResponse);
 					f.trigger(Success(new IsoResult( content) ));
+					Iso.setLoadinfoLabel('PushState - Loaded using ajax', 'label label-success');
 				};		
 				request.onerror = function(e) {			
 					  f.trigger(Failure(new Error('Can\' load from $uri'))); 		
 				}
-				request.send(null);
+				
+				// Timer can be used to simulate a slow ajax loading
+				//haxe.Timer.delay(function() {			
+					request.send(null);
+				//}, 500);
+				
 			}
 
 		return f.asFuture();
 	}
 	#end
 	
-	// Server
-	#if neko
-	function getIsoContent(uri:String):Surprise<IsoResult, Error> {
+	#if Server
+	function loadContent(uri:String):Surprise<IsoResult, Error> {
 		
+		var f = Future.trigger();
+
 		// Load stuff from database or whatever
 		// Here we just load some simple file content...
-		var f = Future.trigger();		
-			var filename = Sys.getCwd() +  'app/content$uri.txt';
-			if (!sys.FileSystem.exists(filename)) {
-				f.trigger( Failure(new Error('Server couldn\'t load content from $filename')));
-			} else {
-				var content = sys.io.File.getContent(filename);
-				f.trigger(Success( new IsoResult( content)));
-			}
+		
+		if (uri == '/') uri = '/home';
+		var filename = Sys.getCwd() +  'app/content$uri.txt';
+		if (!sys.FileSystem.exists(filename)) {
+			f.trigger( Failure(new Error('Server couldn\'t load content from $filename')));
+		} else {
+			
+			// Sys.sleep can be used to simulate a slow standard request loading
+			// Sys.sleep(1) 
+			
+			var content = sys.io.File.getContent(filename);
+			f.trigger(Success( new IsoResult( content)));
+		}
 		return f.asFuture();
 	}
 	#end	

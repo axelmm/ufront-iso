@@ -1,0 +1,16 @@
+
+-js bin/client.js
+-lib ufront-mvc 
+-lib detox 
+-cp src 
+-D Client 
+-main Client
+
+-next
+
+-neko bin/index.n
+-lib ufront-mvc 
+-lib detox 
+-cp src 
+-D Server 
+-main Server

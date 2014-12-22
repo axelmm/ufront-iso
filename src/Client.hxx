@@ -16,15 +16,15 @@ class Client
 			if (! Iso.isFirstRequest()) {
 				
 				// Timer can be used to dely the client side execution - useful when finding out what's going on...
-				//haxe.Timer.delay(function() {
-					Iso.displayPushstateLabel('PushState', 'label label-success');
+				//haxe.Timer.delay(function() {					
 					app.execute(new  ufront.web.context.HttpContext( new ClientRequest(), new ClientResponse()));
 				//}, 1000);
 			}
 			Iso.setUI(Browser.window.location.pathname);
 		});
 		
-		// This is used to put the add the very first request to the client cache
+		// This is used to put the add the very first  server-generated content to the clientside content cache
+		// to prevent the need of ajax-relod it a second time...
 		Iso.addFirstRequestToCache();
 		
 	}
@@ -40,6 +40,10 @@ class Client
 	}
 }
 
+//==============================================================================================
+// These ar client extensions of the request and response classes
+// Very basic right now - just enough to run this simple demo app
+
 class ClientRequest extends  ufront.web.context.HttpRequest {
 	public function new() {}	
 	override function get_uri() return js.Browser.window.location.pathname;
@@ -52,11 +56,16 @@ class ClientRequest extends  ufront.web.context.HttpRequest {
 }
 
 class ClientResponse extends  ufront.web.context.HttpResponse {
-	public function new() {
-		//Iso.setUI(Browser.window.location.pathname);	
-		super();
+	public function new() { 
+		super(); 
+		Iso.setLoadinfoLabel('PushState', 'label label-success');
 	}
-	override function flush() {				
-		js.Browser.document.getElementById('content').innerHTML = _buff.toString();
+	
+	override function flush() {		
+		
+		// Note! Only the content part of the page is served here...
+		var contentHtml = _buff.toString();
+		// and injected into the content div
+		js.Browser.document.getElementById('content').innerHTML = contentHtml;
 	}
 }

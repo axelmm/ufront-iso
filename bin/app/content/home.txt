@@ -1,29 +1,27 @@
 <div class="jumbotron">
 	<h1>ufront-iso</h1>
-	<p>Playground for learning ufront and finding out if and how we can use it for isometric solutions</p>
-
+	<p>Playground for learning ufront and finding out how it can use it for isometric web solutions. </p>
+	
 </div>
+
+<h3><span class="label label-danger">Disclamer!</span></h3><p>Please note that this demo is very basic and experimental! Doing it for the fun of learning!<br />/ Jonas</p>
 
 <div class="page-header"><h2>Why isometric?</h2></div>
 
-<div class="row"><div class="col-md-12">
 
-	<p>The idea of isometric web solutions is to combine the best of two worlds:</p>
+	<p>The idea of isometric web solutions - as far as I understand it - is to combine the best of two worlds:</p>
 	<ul>
-		<li>standard server round-trip soluitions: SEO, linkability, all browser-compatibility etc.</li>
+		<li>standard server round-trip soluitions: SEO-possibilities, linkability, every-impossoble-browser-compatibility etc.</li>
 		<li>client side single-page solutions: speed, elegance, clever use of bandwidht etc.</li>
 	</ul>
 	
-	<p>It shouldn't matter if an uri is served from the server or run on the client. There should be no problem with older browsers not understanding pushstate etc - they will just request the pages as standard server requests.</p>			
+	<p>It shouldn't matter if an uri is served convetionally from the server or called for in the client using pushstate history or ajax. There should be no problem with older browsers not understanding pushstate, not being able to run client-side applications etc. - they will just request the pages as standard server requests.</p>			
 		
-</div></div>  	  
+	  
 
 <div class="page-header"><h2>Client side ufront</h2></div>
 
-<div class="row"><div class="col-md-12">
-
 	<p>UFront is built from the bottom to be used on async platforms (js, nodejs) as well as sync ones (php, neko etc.) This makes it possible to run a full-fledged ufront-mvc in the browser. This ufront-iso demo shows how that can be done by using customized request and response classes.</p>
-	<h4 class="label label-danger">Disclamer!</h4>
-	<p>Please note that this demo is very basic and experimental!</p>
+	
 		
-</div></div>  	  
+  

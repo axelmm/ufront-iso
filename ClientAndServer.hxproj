@@ -33,16 +33,16 @@
   </haxelib>
   <!-- Class files to compile (other referenced classes will automatically be included) -->
   <compileTargets>
-    <compile path="src\Client.hx" />
+    <compile path="src\Client.hxx" />
   </compileTargets>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
     <hidden path="obj" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>haxe  -lib ufront-mvc -lib detox -cp src -js bin/client.js -main Client</preBuildCommand>
+  <preBuildCommand>haxe  -lib ufront-mvc -lib detox -cp src -js bin/client.js -D Client -main Main</preBuildCommand>
   <!-- Executed after build -->
-  <postBuildCommand alwaysRun="False">haxe  -lib ufront-mvc -lib detox -cp src -neko bin/index.n -D Server -main Server</postBuildCommand>
+  <postBuildCommand alwaysRun="False">haxe  -lib ufront-mvc -lib detox -cp src -neko bin/index.n -D Server -main Main</postBuildCommand>
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
