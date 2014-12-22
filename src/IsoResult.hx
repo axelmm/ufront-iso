@@ -1,10 +1,5 @@
 package;
-import haxe.Template;
 
-#if  Server
-import sys.io.File;
-#end
-import ufront.core.Sync;
 import ufront.web.context.ActionContext;
 
 /**
@@ -12,15 +7,17 @@ import ufront.web.context.ActionContext;
  * @author Jonas Nyström
  */
  
- // The IsoResult is a simple standard ActionResult, that takes the content and writes it to the response object
- // The only iso-specific thing here is that when it's run on the server, it can identify if the request is an ajax request by checking a header flag
-  
+ // The IsoResult is a simple standard ActionResult, that takes the content part of the page and writes 
+ // it to the response object. The only iso-specific thing here is that when it's run on the server,
+ // it can identify the request as an ajax request by checking a header flag
+
  // When run on the client, it just passes along the content part of the page
  // Likewise, when run on the server and identified as an ajax request, it just passes along the content part
- // However , if it's a server request without the ajax flag being set - it is considered as a standard server request. In this case
- // the content part is wrapped into a page template
+ 
+ // However , if it's a server request without the ajax flag being set - it is considered as a standard server 
+ // request. In this case the content part is wrapped into a page template.
   
-class IsoResult  extends ufront.web.result.ActionResult
+class IsoResult extends ufront.web.result.ActionResult
 {
 	var content:String;
 	
@@ -44,14 +41,14 @@ class IsoResult  extends ufront.web.result.ActionResult
 				// If it isn't an ajax request...
 				if  (requestType != Iso.AJAX) {
 					// load the html template
-					var template = new Template(File.getContent(Sys.getCwd() + 'app/template.html'));
+					var template = new haxe.Template(sys.io.File.getContent(Sys.getCwd() + 'app/template.html'));
 					// and wrap the content into a template
 					return  template.execute( { content: this.content } );			
 				}
 			#end
 			
-			// This will happen
-			// - when run on server as an ajax call
+			// The following will happen...
+			// - when run on server and identified as an ajax call
 			// - when run on client
 			return this.content;
 	}
