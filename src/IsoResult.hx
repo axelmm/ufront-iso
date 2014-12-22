@@ -7,10 +7,10 @@ import ufront.web.context.ActionContext;
  * @author Jonas Nyström
  */
  
- // The IsoResult is a simple standard ActionResult, that takes the content and writes it to the response object
- // The only iso-specific thing here is that when it's run on the server, it can identify the request as an 
- // ajax request by checking a header flag
-  
+ // The IsoResult is a simple standard ActionResult, that takes the content part of the page and writes 
+ // it to the response object. The only iso-specific thing here is that when it's run on the server,
+ // it can identify the request as an ajax request by checking a header flag
+
  // When run on the client, it just passes along the content part of the page
  // Likewise, when run on the server and identified as an ajax request, it just passes along the content part
  
