@@ -11,7 +11,7 @@ Give it a try
 -------------
 
 - Download or clone this repo.
-- Navigate to /ufront-iso/bin and start a neko server pointing to that directory: `> nekotools server -rewrite`
+- Navigate to **/ufront-iso/bin** and start a neko server pointing to that directory: `> nekotools server -rewrite`
 - Surf to `http://localhost:2000`. You shoud see the home screen as above.
 
 Things to note
