@@ -28,6 +28,17 @@ Browser history navigation is taken care of by the client Pushstate wrapper.
 
 You can always do a page refresh for any valid url (for example by clicking F5 in the browser). The page is then fetched from the server and the client app is reloaded.
 
+Build
+-----
+
+The libraries neede for building this demo are [Detox](https://github.com/jasononeil/detox) (current version 1.0.0-rc2) and [ufront-mvx](https://github.com/ufront/ufront-mvc) (current version 1.0.0-rc9). They can be installed using haxelib:
+
+`> haxelib install ufront-mvc`
+
+`> haxelib install detox`
+
+The Pushstate library is currently included in the /src directory.
+
 Thanks
 ------
 All credits to [Jason O'Neil](https://github.com/jasononeil/) (who is maintaining Ufront, Pushstate and Detox), and [Franco Ponticelli](https://github.com/fponticelli) and [Andreas Söderlund](https://github.com/ciscoheat) who started the ufront project.
