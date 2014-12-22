@@ -30,4 +30,4 @@ You can always do a page refresh for any valid url (for example by clicking F5 i
 
 Thanks
 ------
-All credits to [Jason O'Neil](https://github.com/jasononeil/) (who is maintaining Ufront, Pushstate and Detox), and also [Franco Ponticelli](https://github.com/fponticelli) and [Andreas Söderlund](https://github.com/ciscoheat) who started the ufront project.
+All credits to [Jason O'Neil](https://github.com/jasononeil/) (who is maintaining Ufront, Pushstate and Detox), and [Franco Ponticelli](https://github.com/fponticelli) and [Andreas Söderlund](https://github.com/ciscoheat) who started the ufront project.
