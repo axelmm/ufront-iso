@@ -33,7 +33,7 @@ For further investigation: serverside dom manipulation
 There are more to do when it comes to code sharing. The Detox library makes it possible to actually perform DOM opereations on the servere side in a JQuery-like manner. 
 This way, post-browser-load javascript ui adaption etc. coulb be (at least partly) eliminated.
 
-Maybe the whole internal handling of the dom to be served could be handled "virtually" on the server side using Detox library?
+Maybe the whole serverside handling of the html/dom to be served could be handled "virtually" using Detox?
 
 Build
 -----
