@@ -4,13 +4,13 @@
 -lib detox 
 -cp src 
 -D Client 
--main Client
+-main Main
 
--next
+--next
 
 -neko bin/index.n
 -lib ufront-mvc 
 -lib detox 
 -cp src 
 -D Server 
--main Server
+-main Main

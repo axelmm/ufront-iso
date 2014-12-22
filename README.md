@@ -28,6 +28,13 @@ Browser history navigation is taken care of by the client Pushstate wrapper.
 
 You can always do a page refresh for any valid url (for example by clicking F5 in the browser). The page is then fetched from the server and the client app is reloaded.
 
+For further investigation: serverside dom manipulation
+------------------------------------------------------
+There are more to do when it comes to code sharing. The Detox library makes it possible to actually perform DOM opereations on the servere side in a JQuery-like manner. 
+This way, post-browser-load javascript ui adaption etc. coulb be (at least partly) eliminated.
+
+Maybe the whole internal handling of the dom to be served could be handled "virtually" on the server side using Detox library?
+
 Build
 -----
 
