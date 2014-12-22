@@ -37,8 +37,8 @@ The libraries neede for building this demo are [Detox](https://github.com/jasono
 
 `> haxelib install detox`
 
-The Pushstate library is currently included in the /src directory.
+This will automatically isntall other dependencies, like `tink_core` and `tink_macro`. The Pushstate library is currently included in the /src directory.
 
 Thanks
 ------
-All credits to [Jason O'Neil](https://github.com/jasononeil/) (who is maintaining Ufront, Pushstate and Detox), and [Franco Ponticelli](https://github.com/fponticelli) and [Andreas Söderlund](https://github.com/ciscoheat) who started the ufront project.
+All credits to [Jason O'Neil](https://github.com/jasononeil/) (who is maintaining Ufront, Pushstate and Detox), and [Franco Ponticelli](https://github.com/fponticelli) and [Andreas Söderlund](https://github.com/ciscoheat) who started the ufront project. Also [Juraj Kirchheim](https://github.com/back2dos) for the super userful Tinkerbell library.
