@@ -7,15 +7,12 @@ DISCLAIMER: Don't expect anyting but basic experiments here. For the fun of lear
 
 ![ufront-iso](/screen.png?raw=true "ufront-iso")
 
-Usage
------
+Give it a try
+-------------
 
-Download or clone this repo.
-
-Navigate to /ufront-iso/bin and start a neko server pointing to that directory:
-`> nekotools server -rewrite`
-
-Surf to `http://localhost:2000`. You shoud see the home screen as above.
+- Download or clone this repo.
+- Navigate to /ufront-iso/bin and start a neko server pointing to that directory: `> nekotools server -rewrite`
+- Surf to `http://localhost:2000`. You shoud see the home screen as above.
 
 Things to note
 --------------
