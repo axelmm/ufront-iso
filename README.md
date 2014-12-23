@@ -38,7 +38,7 @@ Maybe the whole serverside handling of the html/dom to be served could be handle
 Build
 -----
 
-The libraries needed for building this demo are [Detox](https://github.com/jasononeil/detox) (current version 1.0.0-rc2) and [ufront-mvx](https://github.com/ufront/ufront-mvc) (current version 1.0.0-rc9). They can be installed using haxelib:
+The libraries needed for building this demo are [Detox](https://github.com/jasononeil/detox) (current version 1.0.0-rc2) and [ufront-mvc](https://github.com/ufront/ufront-mvc) (current version 1.0.0-rc9). They can be installed using haxelib:
 
 `> haxelib install ufront-mvc`
 
