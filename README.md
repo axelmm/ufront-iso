@@ -19,7 +19,7 @@ Things to note
 
 The very first request is performed by the server. It loads the page content and wraps it into the page template (bin/template.html). (The only client-side things happening when browser loading is ready are setting the "active" class for the current menu item - but this could also be done serverside using Jason O'Neil's [Detox](https://github.com/jasononeil/detox)!).
 
-Further clicks on menu items are controlled by the client. The pushstate handler ([also a work of Jason's](https://github.com/jasononeil/detox)) prevents performing a server request. (Note that the anchor tags in the bin/template.html has a rel="pushstate" attribute.) Instead the client side ufront instance is kicked off, and handles the page request in one of two ways: If the page is present in the clientside cache, it is served from there. If it isn't, then it is loaded using an ajax request (to the server version of "itself"! :-)
+Further clicks on menu items are controlled by the client. The pushstate handler ([also a work of Jason's](https://github.com/jasononeil/hxpushstate)) prevents performing a server request. (Note that the anchor tags in the bin/template.html has a rel="pushstate" attribute.) Instead the client side ufront instance is kicked off, and handles the page request in one of two ways: If the page is present in the clientside cache, it is served from there. If it isn't, then it is loaded using an ajax request (to the server version of "itself"! :-)
 
 Browser history navigation is catched by the client Pushstate wrapper, and the client side app serves them (from cache or ajax loading, if needed).
 
@@ -44,7 +44,7 @@ The libraries needed for building this demo are [Detox](https://github.com/jason
 
 `> haxelib install detox`
 
-This will automatically isntall other dependencies, like `tink_core` and `tink_macro`. The Pushstate library is currently included in the /src directory.
+This will automatically isntall other dependencies, like `tink_core` and `tink_macro`. The HxPushstate library is currently included in the /src directory.
 
 Running `> haxe build.hxml` builds two projects, the server as **bin/index.n** and the client as **bin/client.js**
 
