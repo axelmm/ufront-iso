@@ -1,9 +1,9 @@
+DISCLAIMER: This code is outdated. Don't expect anyting but basic experiments here. For the fun of learning and Haxing!
+
 ufront-iso
 ==========
 
 Playground to learn [UFront](https://github.com/ufront) and to find out what's possible when it comes to isomorphic solutions (same code on client and server).
-
-DISCLAIMER: Don't expect anyting but basic experiments here. For the fun of learning and Haxing!
 
 ![ufront-iso](/screen.png?raw=true "ufront-iso")
 
